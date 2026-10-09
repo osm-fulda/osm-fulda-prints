@@ -3,12 +3,12 @@
 Visitenkarten und Aushang für [OpenStreetMap Fulda](https://wiki.openstreetmap.org/wiki/Fulda),
 im Stil des OSM-Fulda-Titelbilds (Schrift *Barlow Condensed*, Textfarbe `#2d3335`).
 
-| Ordner | Was | Druckdatei |
-|---|---|---|
-| `mitmachkarte/` | Visitenkarte 85×55, doppelseitig: vorne Titelbild, hinten 6 QR-Codes (Info, Wiki, Matrix, StreetComplete, OSMapp, Panoramax). Für Leute, die schon Interesse haben. | `mitmachkarte-a4.pdf` |
-| `infokarte/` | Visitenkarte 85×55, einseitig, zum Liegenlassen (Wartezimmer …): Logo, Aufhänger, 2 QR-Codes. | `infokarte-a4.pdf` |
-| `aushang/` | A5 für Schaufenster/Scheiben, beidseitig gleich bedruckt. Variante mit Mitmach-Rückseite als Vorlage für einen späteren Profidruck. | `aushang-a4.pdf`, `aushang-mit-rueckseite-a4.pdf` |
-| `gemeinsam/` | `druck.py` (Schrift, QR, Logo, URLs), `make_a4.py` (Druckbogen), Schriften, Logo, Titelbild | – |
+| Ordner | Vorschau | Was | Druckdatei |
+|---|---|---|---|
+| `mitmachkarte/` | <img src="mitmachkarte/mitmachkarte-vorne.png" width="220" alt="Mitmachkarte vorne"><br><img src="mitmachkarte/mitmachkarte-hinten.png" width="220" alt="Mitmachkarte hinten"> | Visitenkarte 85×55, doppelseitig: vorne Titelbild, hinten 6 QR-Codes (Info, Wiki, Matrix, StreetComplete, OSMapp, Panoramax). Für Leute, die schon Interesse haben. | [`mitmachkarte-a4.pdf`](mitmachkarte/mitmachkarte-a4.pdf) |
+| `infokarte/` | <img src="infokarte/infokarte.png" width="220" alt="Infokarte"> | Visitenkarte 85×55, einseitig, zum Liegenlassen (Wartezimmer …): Logo, Aufhänger, 2 QR-Codes. | [`infokarte-a4.pdf`](infokarte/infokarte-a4.pdf) |
+| `aushang/` | <img src="aushang/aushang-vorne.png" width="150" alt="Aushang vorne"> <img src="aushang/aushang-hinten.png" width="150" alt="Aushang Rückseite"> | A5 für Schaufenster/Scheiben, beidseitig gleich bedruckt (links). Variante mit Mitmach-Rückseite (rechts) als Vorlage für einen späteren Profidruck. | [`aushang-a4.pdf`](aushang/aushang-a4.pdf), [`aushang-mit-rueckseite-a4.pdf`](aushang/aushang-mit-rueckseite-a4.pdf) |
+| `gemeinsam/` | | `druck.py` (Schrift, QR, Logo, URLs), `make_a4.py` (Druckbogen), Schriften, Logo, Titelbild | – |
 
 ## Bauen
 
