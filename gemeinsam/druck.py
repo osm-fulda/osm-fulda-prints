@@ -3,9 +3,9 @@
 Schrift Barlow Condensed (OFL, ./fonts), Logo und Titelbild (./assets), QR-Codes als Vektor,
 Text-Messung für Zeilenumbruch und Ausrichtung. Alle Maße in mm.
 """
+import base64
 import os
 import subprocess
-import xml.etree.ElementTree as ET
 
 import qrcode
 from fontTools.ttLib import TTFont
@@ -102,20 +102,18 @@ def qr_path(data, x0, y0, size):
     return "".join(parts), qr.version, n, s
 
 
-def logo_svg(x, y, size):
-    """Logo als verschachteltes <svg> einbetten (bleibt Vektor)."""
-    ET.register_namespace("", "http://www.w3.org/2000/svg")
-    ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
-    root = ET.parse(LOGO).getroot()
-    for el in list(root):
-        if "namedview" in el.tag or "metadata" in el.tag:
-            root.remove(el)
-    vb = root.get("viewBox") or f"0 0 {root.get('width')} {root.get('height')}"
-    for k in list(root.attrib):
-        if k.startswith("{") or k in ("sodipodi:docname", "inkscape:version"):
-            del root.attrib[k]
-    root.attrib.update(x=f"{x:.2f}", y=f"{y:.2f}", width=str(size), height=str(size), viewBox=vb)
-    return ET.tostring(root, encoding="unicode")
+def logo_svg(x, y, size, dpi=1200):
+    """Logo als opakes PNG auf Weiß einbetten.
+
+    Das Logo hat weichgezeichnete Schatten und halbtransparente Verläufe. Als Vektor landen die
+    im PDF als Soft-Masks, die viele Druckertreiber als grauen Kasten ums Logo drucken.
+    Vorab gerendert ohne Transparenz gibt es das Problem nicht (Karten sind weiß hinterlegt).
+    """
+    px = round(size / 25.4 * dpi)
+    data = subprocess.run(["rsvg-convert", "-b", "white", "-w", str(px), "-h", str(px), LOGO],
+                          check=True, capture_output=True).stdout
+    href = "data:image/png;base64," + base64.b64encode(data).decode()
+    return f'<image x="{x:.2f}" y="{y:.2f}" width="{size}" height="{size}" href="{href}"/>'
 
 
 def card_page(body):
