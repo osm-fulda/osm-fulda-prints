@@ -27,10 +27,19 @@ BLEED = 3              # Beschnitt rundum
 
 URL_OSM = "https://openstreetmap.de/osm/"
 URL_WIKI = "https://wiki.openstreetmap.org/wiki/Fulda"
-URL_MATRIX = "https://matrix.to/#/#osm-fulda-space:shivering-isles.com"
+# Weiterleitung auf https://matrix.to/#/#osm-fulda-space:shivering-isles.com (eigene Domain, Ziel änderbar)
+URL_MATRIX = "https://chat.osm-fulda.de/"
 URL_STREETCOMPLETE = "https://streetcomplete.app/"
 URL_OSMAPP = "https://osmapp.org/de"
 URL_PANORAMAX = "https://panorama.osm-fulda.de/"
+
+# Zum Abtippen unter den QR-Codes (manche scannen fremde QR-Codes lieber nicht)
+SHOW_OSM = "openstreetmap.de/osm"
+SHOW_WIKI = "osm.wiki/Fulda"      # Weiterleitung aufs Fulda-Wiki
+SHOW_MATRIX = "chat.osm-fulda.de"
+SHOW_STREETCOMPLETE = "streetcomplete.app"
+SHOW_OSMAPP = "osmapp.org"
+SHOW_PANORAMAX = "panorama.osm-fulda.de"
 
 # --- Schrift -----------------------------------------------------------------
 
@@ -59,7 +68,9 @@ def cap_height(weight, size):
 
 def wrap(text, weight, size, width):
     lines, cur = [], ""
-    for word in text.split():
+    for word in text.split(" "):   # nur normale Leerzeichen – \u00a0 hält zusammen
+        if not word:
+            continue
         trial = f"{cur} {word}".strip()
         if cur and text_width(trial, weight, size) > width:
             lines.append(cur)

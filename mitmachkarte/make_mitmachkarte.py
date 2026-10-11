@@ -31,13 +31,13 @@ ATTRIBUTION = "Kartendaten © OpenStreetMap-Mitwirkende"
 
 CODES = [  # (Label, Untertitel, URL)
     # Reihe 1: Info & Kontakt
-    ("Was ist OSM?", "openstreetmap.de", druck.URL_OSM),
-    ("Mach mit!", "Wiki", druck.URL_WIKI),
-    ("Chatte mit uns", "Matrix", druck.URL_MATRIX),
+    ("Was ist OSM?", druck.SHOW_OSM, druck.URL_OSM),
+    ("Mach mit!", druck.SHOW_WIKI, druck.URL_WIKI),
+    ("Chatte mit uns", druck.SHOW_MATRIX, druck.URL_MATRIX),
     # Reihe 2: Tools
-    ("Fülle Lücken", "StreetComplete", druck.URL_STREETCOMPLETE),
-    ("Finde Orte", "OSMapp", druck.URL_OSMAPP),
-    ("Schau dich um", "Panoramax", druck.URL_PANORAMAX),
+    ("Fülle Lücken", druck.SHOW_STREETCOMPLETE, druck.URL_STREETCOMPLETE),
+    ("Finde Orte", druck.SHOW_OSMAPP, druck.URL_OSMAPP),
+    ("Schau dich um", druck.SHOW_PANORAMAX, druck.URL_PANORAMAX),
 ]
 
 SAFE = 3             # Sicherheitsabstand innen

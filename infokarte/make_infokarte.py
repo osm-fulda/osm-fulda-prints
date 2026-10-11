@@ -19,16 +19,20 @@ import make_a4  # noqa: E402
 from druck import GREY, H, INK, W, cap_height, logo_svg, qr_path, text_width, wrap  # noqa: E402
 
 SAFE = 3.5
-HEADLINE = ["Du nutzt diese Karte", "vermutlich schon."]   # Zeilen des Aufhängers
+HEADLINE = ["Du nutzt diese", "Karte jeden Tag –", "ohne es zu wissen."]   # Zeilen des Aufhängers
 KICKER = "OPENSTREETMAP FULDA"   # kleine Zeile darüber
 BODY = ("OpenStreetMap gehört keinem Konzern, sondern uns allen – niemand verdient "
         "an deinen Daten. Sie steckt in vielen Apps. Was fehlt, trägst du selbst ein.")
 CODES = [  # (Label, Untertitel, URL)
-    ("Was ist OSM?", "openstreetmap.de", druck.URL_OSM),
-    ("Mach mit!", "Wiki Fulda", druck.URL_WIKI),
+    ("Was ist OSM?", druck.SHOW_OSM, druck.URL_OSM),
+    ("Mach mit!", druck.SHOW_WIKI, druck.URL_WIKI),
 ]
 
 LOGO = 25.0          # Logo oben links, groß
+LOGO_GAP = 3.5       # Abstand Logo -> Kopftext
+BLOCK_GAP = 1.5      # zusätzlicher Abstand Kopf -> Fließtext/Codes
+ALIGN = "start"      # Kopfblock rechts vom Logo: "start" (links), "middle", "end" (rechtsbündig)
+LOGO_VISIBLE = 21.0  # sichtbare Höhe (SVG hat oben/unten Luft) – Kopfblock nicht höher
 KICKER_SIZE = 2.4    # Schriftgröße Kickerzeile
 KICKER_SPACING = 0.45
 HEAD_MAX = 6.4       # max. Schriftgröße Aufhänger
@@ -50,18 +54,22 @@ def text(x, y, s, size, weight, fill=INK, anchor="start", spacing=None):
 def card():
     out = []
     # Kopf: großes Logo links; rechts kleine Kickerzeile + Aufhänger (zweizeilig) als Hauptelement
-    lx = lgy = SAFE - 1.0                 # Logo-SVG hat etwas Luft am Rand
+    lx, lgy = SAFE - 1.0, SAFE - 1.8      # Logo-SVG hat etwas Luft am Rand
     out.append(logo_svg(lx, lgy, LOGO))
-    tx = lx + LOGO + 1.5
+    tx = lx + LOGO + LOGO_GAP
     tw = W - SAFE - tx
-    hs = min(HEAD_MAX, *(HEAD_MAX * tw / text_width(l, 700, HEAD_MAX) for l in HEADLINE))
-    ck, ch = cap_height(500, KICKER_SIZE), cap_height(700, hs)
+    ck = cap_height(500, KICKER_SIZE)
+    # Schrift so groß, dass jede Zeile in die Breite und der ganze Block in die Logohöhe passt
+    fit_h = (LOGO_VISIBLE - ck - 2.2) / (cap_height(700, 1) + (len(HEADLINE) - 1) * HEAD_LEAD)
+    hs = min(HEAD_MAX, fit_h, *(HEAD_MAX * tw / text_width(l, 700, HEAD_MAX) for l in HEADLINE))
+    ch = cap_height(700, hs)
     block = ck + 2.2 + ch + (len(HEADLINE) - 1) * hs * HEAD_LEAD
     yk = lgy + (LOGO - block) / 2 + ck    # Block vertikal mittig zum Logo
-    out.append(text(tx, yk, KICKER, KICKER_SIZE, 500, GREY, spacing=KICKER_SPACING))
+    ax = {"start": tx, "middle": tx + tw / 2, "end": W - SAFE}[ALIGN]
+    out.append(text(ax, yk, KICKER, KICKER_SIZE, 500, GREY, anchor=ALIGN, spacing=KICKER_SPACING))
     yh = yk + 2.2 + ch
     for i, line in enumerate(HEADLINE):
-        out.append(text(tx, yh + i * hs * HEAD_LEAD, line, hs, 700))
+        out.append(text(ax, yh + i * hs * HEAD_LEAD, line, hs, 700, anchor=ALIGN))
     yh += (len(HEADLINE) - 1) * hs * HEAD_LEAD
 
     # QR-Codes unten rechts
@@ -81,7 +89,7 @@ def card():
     # Fließtext links neben den Codes
     bw = xs[0] - 3.0 - SAFE
     lines = wrap(BODY, 400, BODY_SIZE, bw)
-    y = max(yh + 3.2, lgy + LOGO + 0.5) + cap_height(400, BODY_SIZE)
+    y = max(yh + 3.2, lgy + LOGO + 0.5) + BLOCK_GAP + cap_height(400, BODY_SIZE)
     for i, line in enumerate(lines):
         out.append(text(SAFE, y + i * BODY_SIZE * BODY_LEAD, line, BODY_SIZE, 400))
     bottom = y + (len(lines) - 1) * BODY_SIZE * BODY_LEAD
