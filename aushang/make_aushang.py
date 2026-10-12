@@ -50,7 +50,7 @@ FRONT = {
             "Fahrradnavi bis zur Wander-App. Jeder Weg, jede Parkbank und jeder Spielplatz darauf "
             "wurde von Freiwilligen eingetragen. Mach mit – oft reicht dein Handy.",
     "codes": [
-        ("Was ist OSM?", druck.SHOW_OSM, URL_OSM),
+        ("Was ist OpenStreetMap?", druck.SHOW_OSM, URL_OSM),
         ("Mach mit!", druck.SHOW_WIKI, URL_WIKI),
         ("Chatte mit uns", druck.SHOW_MATRIX, URL_MATRIX),
     ],

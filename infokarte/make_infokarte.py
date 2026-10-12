@@ -24,7 +24,7 @@ KICKER = "OPENSTREETMAP FULDA"   # kleine Zeile darüber
 BODY = ("OpenStreetMap gehört keinem Konzern, sondern uns allen – niemand verdient "
         "an deinen Daten. Sie steckt in vielen Apps. Was fehlt, trägst du selbst ein.")
 CODES = [  # (Label, Untertitel, URL)
-    ("Was ist OSM?", druck.SHOW_OSM, druck.URL_OSM),
+    ("Was ist OpenStreetMap?", druck.SHOW_OSM, druck.URL_OSM),
     ("Mach mit!", druck.SHOW_WIKI, druck.URL_WIKI),
 ]
 

@@ -77,7 +77,7 @@ BACK = {
                   "Fulda. Egal ob Neuling oder Profi: Schreib uns, stell Fragen "
                   "oder kartiere mit uns.",
     "codes": [
-        ("Was ist OSM?", druck.SHOW_OSM, druck.URL_OSM),
+        ("Was ist OpenStreetMap?", druck.SHOW_OSM, druck.URL_OSM),
         ("Mach mit!", druck.SHOW_WIKI, druck.URL_WIKI),
         ("Chatte mit uns", druck.SHOW_MATRIX, druck.URL_MATRIX),
     ],

@@ -31,7 +31,7 @@ ATTRIBUTION = "Kartendaten © OpenStreetMap-Mitwirkende"
 
 CODES = [  # (Label, Untertitel, URL)
     # Reihe 1: Info & Kontakt
-    ("Was ist OSM?", druck.SHOW_OSM, druck.URL_OSM),
+    ("Was ist OpenStreetMap?", druck.SHOW_OSM, druck.URL_OSM),
     ("Mach mit!", druck.SHOW_WIKI, druck.URL_WIKI),
     ("Chatte mit uns", druck.SHOW_MATRIX, druck.URL_MATRIX),
     # Reihe 2: Tools
