@@ -6,7 +6,6 @@ die Vorderseite von innen und außen lesbar.
   aushang-a4.pdf                 – 2x A5 pro A4 quer; Seite 1 mit Schnittlinie, Seite 2 = Rückseite für Duplex
   aushang-vorne.svg/png          – Einzelseite A5 zur Kontrolle
 
-Der Flyer (../flyer) nutzt dieselbe Vorderseite und die Bausteine hier, hat aber eine eigene Rückseite.
 Schrift, Titelbild und URLs aus ../gemeinsam (druck.py).
 """
 import base64
