@@ -19,7 +19,7 @@ import make_a4  # noqa: E402
 from druck import GREY, H, INK, W, cap_height, logo_svg, qr_path, text_width, wrap  # noqa: E402
 
 SAFE = 3.5
-HEADLINE = ["Du nutzt diese", "Karte jeden Tag –", "ohne es zu wissen."]   # Zeilen des Aufhängers
+HEADLINE = ["Du nutzt diese", "Karte jeden Tag.", "Ohne es zu wissen."]   # Zeilen des Aufhängers
 KICKER = "OPENSTREETMAP FULDA"   # kleine Zeile darüber
 BODY = ("OpenStreetMap gehört keinem Konzern, sondern uns allen – niemand verdient "
         "an deinen Daten. Sie steckt in vielen Apps. Was fehlt, trägst du selbst ein.")
