@@ -45,8 +45,8 @@ URL_OSM, URL_WIKI, URL_MATRIX = druck.URL_OSM, druck.URL_WIKI, druck.URL_MATRIX
 FRONT = {
     "headline": ["Du nutzt diese Karte jeden Tag.", "Ohne es zu wissen."],   # Zeilen
     "sub": "Gemacht von Menschen wie dir – auch in Fulda.",
-    "body": "OpenStreetMap ist die freie Weltkarte hinter vielen Apps und Websites – vom "
-            "Fahrradnavi bis zur Wander-App. Jeder Weg, jede Parkbank und jeder Spielplatz darauf "
+    "body": "OpenStreetMap ist die freie Datenbank hinter vielen Karten, Apps und Websites – vom "
+            "Fahrradnavi bis zur Wander-App. Jeder Weg, jede Parkbank und jeder Spielplatz darin "
             "wurde von Freiwilligen eingetragen. Mach mit – oft reicht dein Handy.",
     "codes": [
         ("Was ist OpenStreetMap?", druck.SHOW_OSM, URL_OSM),
