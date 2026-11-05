@@ -9,6 +9,7 @@ im Stil des OSM-Fulda-Titelbilds (Schrift *Barlow Condensed*, Textfarbe `#2d3335
 | `infokarte/` | <img src="infokarte/infokarte.png" width="220" alt="Infokarte"> | Visitenkarte 85×55, einseitig, zum Liegenlassen (Wartezimmer …): Logo, Aufhänger, 2 QR-Codes. | [`infokarte-a4.pdf`](infokarte/infokarte-a4.pdf) |
 | `aushang/` | <img src="aushang/aushang-vorne.png" width="150" alt="Aushang"> | A5, eine Seite. Für Pinnwand und Schwarzes Brett einseitig drucken, für Glasscheiben beidseitig (dann von innen und außen lesbar). | [`aushang-a4.pdf`](aushang/aushang-a4.pdf) |
 | `aufsteller/` | <img src="aufsteller/aufsteller-mitmachkarte.png" width="70" alt="Aufsteller Mitmachkarte"> <img src="aufsteller/aufsteller-aushang.png" width="70" alt="Aufsteller Aushang"> <img src="aufsteller/aufsteller-infokarte.png" width="70" alt="Aufsteller Infokarte"> | Drei Tischaufsteller für den Infostand, je einer vor den Stapel: „Steck mich ein!“ (Mitmachkarte), „Häng mich auf!“ (Aushang), „Leg mich aus!“ (Infokarte). A4 hoch, zum Dreieck gefaltet, von beiden Seiten lesbar; mit QR-Code zu diesem Repo, falls etwas vergriffen ist. | [`aufsteller-a4.pdf`](aufsteller/aufsteller-a4.pdf) (3 Seiten) |
+| `shirt/` | <img src="shirt/vorschau.png" width="220" alt="Shirt-Motive"> | Shirt-Motive für den Druck (DTF): Großlogo, Brustlogo, Stadtplan mit Lupe, Tag-Editor „Mapper“. PNGs zum Hochladen beim Druckdienst, Quellen und Skripte in `shirt/quelle/`. `quelle/check.sh` prüft zu dünne Linien und zu enge Lücken. | PNGs in `shirt/` |
 | `gemeinsam/` | | `druck.py` (Schrift, QR, Logo, URLs), `make_a4.py` (Druckbogen), Schriften, Logo, Titelbild | – |
 
 ## Bauen
@@ -18,7 +19,11 @@ python3 mitmachkarte/make_mitmachkarte.py
 python3 infokarte/make_infokarte.py
 python3 aushang/make_aushang.py
 python3 aufsteller/make_aufsteller.py   # zuletzt: nimmt die Vorschaubilder der anderen
+shirt/quelle/build.sh                   # Shirt-Motive, braucht zusätzlich ImageMagick (magick)
 ```
+
+`shirt/quelle/build.sh` erzeugt auch die Motive `pocketlogo-linie-hell` und `tags-fulda-hell`. Die sind
+nicht in Gebrauch: PNGs danach löschen und `python3 shirt/quelle/vorschau.py gemeinsam/fonts` neu laufen lassen.
 
 Braucht: Python 3 mit `qrcode`, `fonttools`, `Pillow`; `rsvg-convert` (librsvg); optional `gs`
 (Ghostscript – komprimiert die Bögen von ~18 MB auf ~2 MB). Zum Prüfen der Codes: `zbarimg`.
@@ -53,4 +58,5 @@ schwarzen Randmarken dort zeigen gegen das Licht, wie weit die Rückseite verset
 ## Lizenzen
 
 - Schrift Barlow Condensed: SIL Open Font License, siehe `gemeinsam/fonts/OFL.txt`.
-- Kartendaten im Titelbild: © OpenStreetMap-Mitwirkende, ODbL.
+- Schrift IBM Plex Mono (Shirt „Mapper“): SIL Open Font License, siehe `gemeinsam/fonts/OFL-IBMPlexMono.txt`.
+- Kartendaten im Titelbild und in den Shirt-Motiven: © OpenStreetMap-Mitwirkende, ODbL.

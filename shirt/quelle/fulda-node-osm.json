@@ -1,0 +1,1059 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-30T14:50:36Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 240088844,
+  "lat": 50.5514658,
+  "lon": 9.6762161,
+  "tags": {
+    "description": "Die Stadt Fulda ist Kreisstadt des gleichnamigen Landkreises Fulda.",
+    "drinking_water": "yes",
+    "name": "Fulda",
+    "name:ar": "فلدا",
+    "name:de": "Fulda",
+    "name:fr": "Fulde",
+    "name:prefix": "Kreisstadt",
+    "name:ru": "Фульда",
+    "name:uk": "Фульда",
+    "note": "Alle Daten zum Gebiet der Stadt Fulda sind in der zugehörigen Grenzrelation, dieser node dient nur zur Markierung der Stadtmitte.",
+    "place": "town",
+    "population": "67980",
+    "population:date": "2020-12-31",
+    "source:population": "Hessisches Statistisches Landesamt",
+    "wikipedia": "de:Fulda"
+  }
+},
+{
+  "type": "relation",
+  "id": 62700,
+  "members": [
+    {
+      "type": "node",
+      "ref": 240088844,
+      "role": "admin_centre"
+    },
+    {
+      "type": "way",
+      "ref": 29411723,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774705,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 93776857,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 85314374,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 84918477,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 85312160,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1111126631,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 85283898,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 85281119,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 800317510,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 800317509,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 85279651,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 800317504,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 800317512,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774700,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774696,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 794945955,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 481001748,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 481006125,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 481002578,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 84918457,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 234278011,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 481006108,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 794945962,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 84918411,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 295793446,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 794945964,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 234272097,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 794945952,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 84918453,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 29411786,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 85186067,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774677,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 85186134,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 480838352,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 480840367,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 480840366,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 231082131,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1110338052,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 480838351,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 231082404,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 800478632,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774675,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 800478629,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 192764616,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 800478626,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 192775644,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 192775738,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 192775776,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1109220416,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 192797730,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 801347101,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 801347095,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 801347098,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 801347093,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 193189993,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 313688522,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 193190008,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075268675,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 193189985,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 316512001,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 711058906,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 53378698,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 711058903,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774642,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 706795210,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 711058895,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 711091025,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 706801650,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 706801647,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1051836069,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1144650967,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 53378695,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 706801648,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 711076707,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774638,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 29412214,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 711076701,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1074126945,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 673691352,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 673691361,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 51300923,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 673691358,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 712672826,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 712672821,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 712680269,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1063001878,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1063001879,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 51300935,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1073784482,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774639,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1073784483,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1073784485,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1073784484,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 51300924,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774636,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1074109857,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 51300916,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 103634127,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 832896385,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774690,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 832896384,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075665259,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075665260,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 832896387,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 832897881,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1074116826,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 73264698,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 832897878,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1074116825,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 832897875,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725774,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075665262,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075665261,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075665263,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 832896391,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774686,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 832896390,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075371774,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075665264,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 29411783,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075665265,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075665266,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075665267,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075371776,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075371775,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 29412790,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1287515231,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1178715768,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1178715767,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075371777,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1287512565,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 805308665,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1153352164,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1153352163,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1153352162,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774683,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1153352161,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 41666846,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1153352160,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 805308675,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 805308674,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1153358138,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 41666671,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1153358139,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 805308671,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1153416970,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1153416969,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 805308672,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1049641624,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1111630903,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 41666666,
+      "role": "outer"
+    }
+  ],
+  "tags": {
+    "TMC:cid_58:tabcd_1:Class": "Area",
+    "TMC:cid_58:tabcd_1:LCLversion": "8.00",
+    "TMC:cid_58:tabcd_1:LocationCode": "422",
+    "admin_level": "6",
+    "admin_title": "county",
+    "admin_title:de": "Kreis",
+    "border_type": "county",
+    "boundary": "administrative",
+    "de:amtlicher_gemeindeschluessel": "06631",
+    "de:regionalschluessel": "06631",
+    "license_plate_code": "FD",
+    "name": "Landkreis Fulda",
+    "ref:nuts:3": "DE732",
+    "source": "http://wiki.openstreetmap.org/wiki/Import/Catalogue/Kreisgrenzen_Deutschland_2005",
+    "type": "boundary",
+    "wikidata": "Q7899",
+    "wikipedia": "de:Landkreis Fulda"
+  }
+},
+{
+  "type": "relation",
+  "id": 454863,
+  "members": [
+    {
+      "type": "way",
+      "ref": 73264691,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725765,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725764,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1074126942,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774658,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725763,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725762,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725761,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725760,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725759,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1074116823,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725758,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1152721769,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725757,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1074116824,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774662,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725756,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 832897875,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725774,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774622,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 73264695,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725773,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075262408,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725772,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725771,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075262407,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 394215376,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 73264703,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725770,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 395431160,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774657,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725768,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725767,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725769,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 806940988,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 806940992,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 948725766,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075265296,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 52774654,
+      "role": "outer"
+    },
+    {
+      "type": "way",
+      "ref": 1075265294,
+      "role": "outer"
+    },
+    {
+      "type": "node",
+      "ref": 240088844,
+      "role": "label"
+    }
+  ],
+  "tags": {
+    "TMC:cid_58:tabcd_1:Class": "Area",
+    "TMC:cid_58:tabcd_1:LCLversion": "9.00",
+    "TMC:cid_58:tabcd_1:LocationCode": "1275",
+    "admin_level": "8",
+    "boundary": "administrative",
+    "de:amtlicher_gemeindeschluessel": "06631009",
+    "de:regionalschluessel": "066310009009",
+    "description": "Das Gesamtgebiet der Stadt Fulda mit allen Stadtteilen.",
+    "loc_name": "Foll",
+    "name": "Fulda",
+    "name:ar": "فلدا",
+    "name:uk": "Фульда",
+    "phone": "+49 661 1020",
+    "population": "67980",
+    "population:date": "2020-12-31",
+    "source:population": "Hessisches Statistisches Landesamt",
+    "type": "boundary",
+    "website": "https://www.fulda.de/",
+    "wikidata": "Q3963",
+    "wikimedia_commons": "Category:Fulda",
+    "wikipedia": "de:Fulda"
+  }
+}
+
+  ]
+}

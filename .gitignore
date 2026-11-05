@@ -3,3 +3,8 @@ gemeinsam/fonts/fonts.conf
 # Zwischendateien – werden von den make_*.py neu erzeugt
 aushang/bogen-*.svg
 /*/*.svg
+
+# Namen echter Mapper fürs Shirt – nicht veröffentlichen
+shirt/quelle/mapper-namen.txt
+shirt/tags-mapper-*-hell.png
+shirt/quelle/tags-mapper-*-hell.svg
