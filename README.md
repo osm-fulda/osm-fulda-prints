@@ -79,4 +79,4 @@ schwarzen Randmarken dort zeigen gegen das Licht, wie weit die Rückseite verset
 - Schrift IBM Plex Mono (Shirt „Mapper“): SIL Open Font License, siehe `gemeinsam/fonts/OFL-IBMPlexMono.txt`.
 - Schrift Silkscreen (Pixel-Aushang): SIL Open Font License, siehe `gemeinsam/fonts/OFL-Silkscreen.txt`.
 - Schrift Permanent Marker (Pappschild-Aushang): Apache License 2.0, siehe `gemeinsam/fonts/LICENSE-PermanentMarker.txt`.
-- Kartendaten im Titelbild: © OpenStreetMap-Mitwirkende, ODbL.
+- Kartendaten im Titelbild und im Shirt-Stadtplan: © OpenStreetMap-Mitwirkende, ODbL.

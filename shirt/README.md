@@ -9,6 +9,7 @@ Quellen und Skripte liegen in `quelle/`.
 |---|---|
 | `grosslogo-linie-hell.png` | großes Logo als flache Linienzeichnung, 27,8 cm breit |
 | `pocketlogo-flaeche-dunkel.png` | Brustlogo mit gefüllter Karte für dunkle Shirts, mit heller Kontur |
+| `stadtplan-lupe-detail-hell.png` | Stadtplan Fulda, 27 cm breit, Lupe über Dom und Schloss mit 2× Zoom: Gärten, Wege, Bäume, Brunnen |
 | `tags-mapper-hell.png` | der Mensch im Shirt als Mapper-„Objekt“ im Stil des iD-Editors, mit `name=FIXME` |
 
 ## Bauen
@@ -33,14 +34,15 @@ Blau: Lücken schmaler als 0,5 mm (können im Druck zulaufen).
 
 ## Daten
 
-Nur das aussortierte Motiv `tags-fulda-hell` nutzt OSM-Daten: den echten Ortsknoten Fulda
-(`quelle/fulda-node.overpassql`, Ergebnis `quelle/fulda-node-osm.json`). Neu holen:
+Der Stadtplan kommt aus OpenStreetMap: Overpass-Abfragen `quelle/stadtplan.overpassql`,
+`lupe.overpassql` und `detail.overpassql`, Ergebnisse in `quelle/*-osm.json`. Das aussortierte Motiv
+`tags-fulda-hell` nutzt den echten Ortsknoten Fulda (`fulda-node.overpassql`). Neu holen, je Abfrage:
 
 ```sh
-curl --data-urlencode data@fulda-node.overpassql https://overpass-api.de/api/interpreter -o fulda-node-osm.json
+curl --data-urlencode data@stadtplan.overpassql https://overpass-api.de/api/interpreter -o stadtplan-osm.json
 ```
 
-Daten © OpenStreetMap-Mitwirkende, ODbL.
+Kartendaten © OpenStreetMap-Mitwirkende, ODbL; der Stadtplan zeigt die Namensnennung.
 
 ## Mapper-Namen
 
