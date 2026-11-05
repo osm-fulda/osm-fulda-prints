@@ -1,17 +1,35 @@
 # OSM Fulda – Drucksachen
 
-Visitenkarten, Aushang und Tischaufsteller für [OpenStreetMap Fulda](https://wiki.openstreetmap.org/wiki/Fulda),
-im Stil des OSM-Fulda-Titelbilds (Schrift *Barlow Condensed*, Textfarbe `#2d3335`).
+Druckvorlagen für [OpenStreetMap Fulda](https://wiki.openstreetmap.org/wiki/Fulda), im Stil des
+OSM-Fulda-Titelbilds (Schrift *Barlow Condensed*, Textfarbe `#2d3335`). Alles wird aus Skripten gebaut.
 
-| Ordner | Vorschau | Was | Druckdatei |
-|---|---|---|---|
-| `mitmachkarte/` | <img src="mitmachkarte/mitmachkarte-vorne.png" width="220" alt="Mitmachkarte vorne"><br><img src="mitmachkarte/mitmachkarte-hinten.png" width="220" alt="Mitmachkarte hinten"> | Visitenkarte 85×55, doppelseitig: vorne Titelbild, hinten 6 QR-Codes (Info, Wiki, Matrix, StreetComplete, OSMapp, Panoramax). Für Leute, die schon Interesse haben. | [`mitmachkarte-a4.pdf`](mitmachkarte/mitmachkarte-a4.pdf) |
-| `infokarte/` | <img src="infokarte/infokarte.png" width="220" alt="Infokarte"> | Visitenkarte 85×55, einseitig, zum Liegenlassen (Wartezimmer …): Logo, Aufhänger, 2 QR-Codes. | [`infokarte-a4.pdf`](infokarte/infokarte-a4.pdf) |
-| `aushang/` | <img src="aushang/aushang-vorne.png" width="150" alt="Aushang"> | A5, eine Seite. Für Pinnwand und Schwarzes Brett einseitig drucken, für Glasscheiben beidseitig (dann von innen und außen lesbar). | [`aushang-a4.pdf`](aushang/aushang-a4.pdf) |
-| `aufsteller/` | <img src="aufsteller/aufsteller-mitmachkarte.png" width="70" alt="Aufsteller Mitmachkarte"> <img src="aufsteller/aufsteller-aushang.png" width="70" alt="Aufsteller Aushang"> <img src="aufsteller/aufsteller-infokarte.png" width="70" alt="Aufsteller Infokarte"> | Drei Tischaufsteller für den Infostand, je einer vor den Stapel: „Steck mich ein!“ (Mitmachkarte), „Häng mich auf!“ (Aushang), „Leg mich aus!“ (Infokarte). A4 hoch, zum Dreieck gefaltet, von beiden Seiten lesbar; mit QR-Code zu diesem Repo, falls etwas vergriffen ist. | [`aufsteller-a4.pdf`](aufsteller/aufsteller-a4.pdf) (3 Seiten) |
-| `aushang-schule/` | <img src="aushang-schule/aushang-schule-pixel.png" width="70" alt="Pixel"> <img src="aushang-schule/aushang-schule-gelb.png" width="70" alt="Gelb"> <img src="aushang-schule/aushang-schule-pappe.png" width="70" alt="Pappe"> <img src="aushang-schule/aushang-schule-sozial.png" width="70" alt="Sozial"> | Vier Aushänge A4 für Schulen, je für eine Zielgruppe: **Pixel** „Level 1: Schulweg“ (Gamer), **Gelb** „OpenStreetMap gehört DIR.“ (Politik), **Pappe** „Mapping for Future“ (Umwelt), **Sozial** „Für dich ein Bordstein. Für andere ein Berg.“ (Barrierefreiheit). Je ein QR-Code zu StreetComplete, kein Chat-Link (Fragen laufen über SV und Lehrkräfte). Die SV wählt aus, was zu ihrer Schule passt. | [`pixel`](aushang-schule/aushang-schule-pixel.pdf) · [`gelb`](aushang-schule/aushang-schule-gelb.pdf) · [`pappe`](aushang-schule/aushang-schule-pappe.pdf) · [`sozial`](aushang-schule/aushang-schule-sozial.pdf) |
-| `shirt/` | <img src="shirt/vorschau.png" width="220" alt="Shirt-Motive"> | Shirt-Motive für den Druck (DTF): Großlogo, Brustlogo, Stadtplan mit Lupe, Tag-Editor „Mapper“. PNGs zum Hochladen beim Druckdienst, Quellen und Skripte in `shirt/quelle/`. `quelle/check.sh` prüft zu dünne Linien und zu enge Lücken. | PNGs in `shirt/` |
-| `gemeinsam/` | | `druck.py` (Schrift, QR, Logo, URLs), `make_a4.py` (Druckbogen), Schriften, Logo, Titelbild | – |
+## Infostand und allgemein
+
+| [Mitmachkarte](mitmachkarte/) | [Infokarte](infokarte/) | [Aushang](aushang/) | [Aufsteller](aufsteller/) |
+|:---:|:---:|:---:|:---:|
+| <img src="mitmachkarte/mitmachkarte-vorne.png" width="160" alt="Mitmachkarte vorne"><br><img src="mitmachkarte/mitmachkarte-hinten.png" width="160" alt="Mitmachkarte hinten"> | <img src="infokarte/infokarte.png" width="160" alt="Infokarte"> | <img src="aushang/aushang-vorne.png" width="110" alt="Aushang"> | <img src="aufsteller/aufsteller-mitmachkarte.png" width="50" alt="Aufsteller Mitmachkarte"> <img src="aufsteller/aufsteller-aushang.png" width="50" alt="Aufsteller Aushang"> <img src="aufsteller/aufsteller-infokarte.png" width="50" alt="Aufsteller Infokarte"> |
+| Visitenkarte 85×55, doppelseitig: vorne Titelbild, hinten 6 QR-Codes (Info, Wiki, Matrix, StreetComplete, OSMapp, Panoramax). Für Leute, die schon Interesse haben. | Visitenkarte 85×55, einseitig, zum Liegenlassen (Wartezimmer …): Logo, Aufhänger, 2 QR-Codes. | A5, eine Seite. Für Pinnwand und Schwarzes Brett einseitig drucken, für Glasscheiben beidseitig (dann von innen und außen lesbar). | Drei Tischaufsteller, je einer vor den Stapel: „Steck mich ein!“, „Häng mich auf!“, „Leg mich aus!“. A4, zum Dreieck gefaltet, mit QR-Code zu diesem Repo. |
+| [`mitmachkarte-a4.pdf`](mitmachkarte/mitmachkarte-a4.pdf) | [`infokarte-a4.pdf`](infokarte/infokarte-a4.pdf) | [`aushang-a4.pdf`](aushang/aushang-a4.pdf) | [`aufsteller-a4.pdf`](aufsteller/aufsteller-a4.pdf) (3 Seiten) |
+
+## Schulen
+
+Vier Aushänge A4, je für eine Zielgruppe. Die Schülervertretung wählt aus, was zu ihrer Schule passt.
+Zielgruppen, Regeln und Hintergründe: [`aushang-schule/README.md`](aushang-schule/README.md).
+
+| Pixel – Gamer | Gelb – Politik | Pappe – Umwelt | Sozial – Barrierefreiheit |
+|:---:|:---:|:---:|:---:|
+| <img src="aushang-schule/aushang-schule-pixel.png" width="130" alt="Pixel"> | <img src="aushang-schule/aushang-schule-gelb.png" width="130" alt="Gelb"> | <img src="aushang-schule/aushang-schule-pappe.png" width="130" alt="Pappe"> | <img src="aushang-schule/aushang-schule-sozial.png" width="130" alt="Sozial"> |
+| [`pixel.pdf`](aushang-schule/aushang-schule-pixel.pdf) | [`gelb.pdf`](aushang-schule/aushang-schule-gelb.pdf) | [`pappe.pdf`](aushang-schule/aushang-schule-pappe.pdf) | [`sozial.pdf`](aushang-schule/aushang-schule-sozial.pdf) |
+
+## Merch
+
+| [Shirts](shirt/) |
+|:---:|
+| <img src="shirt/vorschau.png" width="520" alt="Shirt-Motive"> |
+| Motive für den DTF-Druck. Details, Druckgrenzen und Daten: [`shirt/README.md`](shirt/README.md). |
+
+`gemeinsam/` enthält, was alle nutzen: `druck.py` (Schrift, QR, Logo, URLs), `make_a4.py` (Druckbogen),
+Schriften, Logo und Titelbild.
 
 ## Bauen
 
@@ -20,12 +38,9 @@ python3 mitmachkarte/make_mitmachkarte.py
 python3 infokarte/make_infokarte.py
 python3 aushang/make_aushang.py
 python3 aufsteller/make_aufsteller.py   # zuletzt: nimmt die Vorschaubilder der anderen
-for f in aushang-schule/make_*.py; do python3 "$f"; done   # Schul-Aushänge
-shirt/quelle/build.sh                   # Shirt-Motive, braucht zusätzlich ImageMagick (magick)
+for f in aushang-schule/make_*.py; do python3 "$f"; done
+shirt/quelle/build.sh                   # braucht zusätzlich ImageMagick (magick)
 ```
-
-`shirt/quelle/build.sh` erzeugt auch die Motive `pocketlogo-linie-hell` und `tags-fulda-hell`. Die sind
-nicht in Gebrauch: PNGs danach löschen und `python3 shirt/quelle/vorschau.py gemeinsam/fonts` neu laufen lassen.
 
 Braucht: Python 3 mit `qrcode`, `fonttools`, `Pillow`; `rsvg-convert` (librsvg); optional `gs`
 (Ghostscript – komprimiert die Bögen von ~18 MB auf ~2 MB). Zum Prüfen der Codes: `zbarimg`.
@@ -43,6 +58,7 @@ Bogen danach nur noch mit `gemeinsam/make_a4.py` (siehe Kopf der Datei). Für In
 - **Visitenkarten** (A4 hoch): Duplex **an langer Kante spiegeln**. 10 Karten pro Bogen.
 - **Aushang** (A4 quer, 2× A5): Pinnwand / Schwarzes Brett: nur Seite 1 drucken. Glasscheibe:
   beide Seiten, Duplex **an kurzer Kante**; vorher einen Bogen testen.
+- **Schul-Aushänge** (A4 hoch, einseitig): normales Papier reicht, auch als Schwarzweiß-Kopie.
 - Dicker Karton (> ~105 g/m²) wird vom Drucker oft nicht automatisch gewendet → manuell:
   erst Seite 1, Stapel wenden, dann Seite 2.
 - **Aufsteller** (A4 hoch, einseitig, 3 Seiten): an den gestrichelten Linien falten, unteren Streifen
