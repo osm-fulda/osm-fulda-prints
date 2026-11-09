@@ -10,7 +10,9 @@ Quellen und Skripte liegen in `quelle/`.
 | `grosslogo-linie-hell.png` | großes Logo als flache Linienzeichnung, 27,8 cm breit |
 | `pocketlogo-flaeche-dunkel.png` | Brustlogo mit gefüllter Karte für dunkle Shirts, mit heller Kontur |
 | `stadtplan-lupe-detail-hell.png` | Stadtplan Fulda, 27 cm breit, Lupe über Dom und Schloss mit 2× Zoom: Gärten, Wege, Bäume, Brunnen |
+| `stadtplan-lupe-detail-dunkel.png` | derselbe Stadtplan für dunkle Shirts (schwarz, dunkelgrau, marineblau, olivgrün): helle Straßen und Schrift, helle Kontur um Lupe und Griff |
 | `tags-mapper-hell.png` | der Mensch im Shirt als Mapper-„Objekt“ im Stil des iD-Editors, mit `name=FIXME` |
+| `tags-mapper-dunkel.png` | dasselbe für dunkle Shirts: helle Schrift und Rahmen |
 
 ## Bauen
 
@@ -46,5 +48,6 @@ Kartendaten © OpenStreetMap-Mitwirkende, ODbL; der Stadtplan zeigt die Namensne
 
 ## Mapper-Namen
 
-`tags.py` erzeugt für jede Zeile in `quelle/mapper-namen.txt` ein eigenes Motiv `tags-mapper-NAME-hell`.
+`tags.py` erzeugt für jede Zeile in `quelle/mapper-namen.txt` eigene Motive `tags-mapper-NAME-hell`
+und `tags-mapper-NAME-dunkel`.
 Die Datei und diese Motive enthalten echte Namen und sind per `.gitignore` vom Repo ausgeschlossen.

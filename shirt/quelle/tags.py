@@ -15,6 +15,9 @@ Designs:
   tags-mapper-NAME-hell    the same with name=NAME, one file for each line of
                            mapper-namen.txt (optional, one OSM user name per line)
 
+The mapper prints come in two colour variants: -hell for light shirts and -dunkel
+for dark shirts (black, dark grey, navy, olive).
+
 Each print is 28 cm wide, centred at the top of the print area.
 """
 import json, os, re, sys
@@ -24,7 +27,11 @@ FONTS = sys.argv[1]
 MONO = os.path.join(FONTS, "IBMPlexMono-Bold.ttf")
 BOLD = os.path.join(FONTS, "BarlowCondensed-Bold.ttf")
 
-COL = dict(key="#2d3335", value="#2f6b2a", frame="#8a9499", text="#2d3335")
+PALETTES = {
+    "hell": dict(key="#2d3335", value="#2f6b2a", frame="#8a9499", text="#2d3335"),
+    "dunkel": dict(key="#e9eef0", value="#a6dd8b", frame="#b5bec2", text="#ffffff"),
+}
+COL = None  # palette of the variant that is drawn
 WIDTH_MM = 280  # print width; 1 SVG unit = 1 mm
 TOP_MM = 20     # distance from the top of the print area
 LINE = 1.4      # frame line width (DTF film needs >= 1 mm)
@@ -157,7 +164,10 @@ def editor(preset, ident, sections, min_right):
     return "\n".join(o), y + 2
 
 
-def write(name, design):
+def write(name, design, palette="hell"):
+    global COL
+    COL = PALETTES[palette]
+    name += "-" + palette
     body, h = editor(*design)
     # 2 mm margin so that frame lines on the edge are not cut
     w, h = WIDTH_MM + 4, round(h + 4, 2)
@@ -167,10 +177,13 @@ def write(name, design):
     print("ok, %s %.0f x %.0f mm" % (name, w, h))
 
 
-write("tags-fulda-hell", fulda())
-write("tags-mapper-hell", mapper())
+write("tags-fulda", fulda())
 names = os.path.join(HERE, "mapper-namen.txt")
+users = []
 if os.path.exists(names):
-    for user in filter(None, (l.strip() for l in open(names, encoding="utf-8"))):
+    users = list(filter(None, (l.strip() for l in open(names, encoding="utf-8"))))
+for palette in PALETTES:
+    write("tags-mapper", mapper(), palette)
+    for user in users:
         slug = re.sub(r"[^A-Za-z0-9_-]+", "_", user)
-        write("tags-mapper-%s-hell" % slug, mapper(user))
+        write("tags-mapper-%s" % slug, mapper(user), palette)

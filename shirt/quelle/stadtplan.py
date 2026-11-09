@@ -9,13 +9,20 @@ the data, run for each query:
        https://overpass-api.de/api/interpreter -o stadtplan-osm.json
 Map data (c) OpenStreetMap contributors, ODbL. The print shows the attribution.
 
-The street map has a magnifier over Dom and Schloss with 2x zoom inside the lens:
-  stadtplan-lupe-detail-hell   detailed map: gardens, paths, trees, fountains;
-                               Dom, Paulustor, Hexenturm, Heertor dark, Schloss lighter
+The street map has a magnifier over Dom and Schloss with 2x zoom inside the lens.
+The lens shows a detailed map: gardens, paths, trees, fountains;
+Dom, Paulustor, Hexenturm, Heertor dark, Schloss lighter.
+
+Variants:
+  stadtplan-lupe-detail-hell    for light shirts: dark roads and lettering
+  stadtplan-lupe-detail-dunkel  for dark shirts (black, dark grey, navy, olive):
+                                light roads and lettering, a light keyline
+                                around the dark lens ring and handle
 """
 import math, os, sys
 from common import HERE, PNG_OUT, AREA_MM, text_path, svg, export
-from osmlogo import LENS_C, LENS_R, lens
+from osmlogo import (LENS_C, LENS_R, RING, GLASS, NECK, COLLAR, HANDLE, BAND1, BAND2,
+                     lens)
 import karte
 
 FONTS = sys.argv[1]
@@ -33,19 +40,27 @@ RIVER_MM = 4.0
 LENS_MM = 42.0  # outer radius of the magnifier ring
 ZOOM = 2.0      # magnification inside the lens
 
-COL = dict(road="#2d3335", river="#3f7fd0", landmark="#c04848", park="#4f8a3a",
-           building="#9aa3a7", text="#2d3335", sub="#2f6b2a", ring="#2d3335",
-           handle="#2d3335", band="#e0a800")
+# keyline: None = not drawn
+PALETTES = {
+    "hell": dict(road="#2d3335", river="#3f7fd0", landmark="#c04848", park="#4f8a3a",
+                 text="#2d3335", sub="#2f6b2a", ring="#2d3335", handle="#2d3335",
+                 band="#e0a800", keyline=None),
+    # light colours with enough contrast on black, dark grey, navy and olive
+    "dunkel": dict(road="#c9d0d3", river="#7ab4f5", landmark="#ef7070", park="#8fcf6a",
+                   text="#ffffff", sub="#a6dd8b", ring="#2d3335", handle="#2d3335",
+                   band="#f2c230", keyline="#e9eef0"),
+}
+KEYLINE = 4.0  # keyline stroke width in logo units (half of it shows: 1.2 mm)
+COL = None     # palette of the variant that is drawn
 # detail lens: colours of a detailed OSM map (flat colours only)
 DCOL = dict(land="#ede7dc", grass="#a9d98a", wood="#7fbf62", flowerbed="#e58fb0",
-            water="#7fb0e8", fountain="#3f7fd0", street="#ffffff", path="#ffffff",
+            water="#7fb0e8", river="#3f7fd0", fountain="#3f7fd0", street="#ffffff", path="#ffffff",
             building="#c7b8a8", dom="#8b5a2b", schloss="#a8743f", hedge="#7fbf62", tree="#3f7a2e")
 
 R = DIAMETER_MM / 2.0
 P = karte.Proj(CENTER, DIAMETER_MM / (2.0 * RADIUS_M))
 
 base = karte.load("stadtplan-osm.json")
-ROADS = karte.roads_svg(base, P, ROAD_MM, COL["road"])
 river = [P.d(g) for g in karte.rivers(base)]
 park = [P.d(g, True) for g in karte.parks(base)]
 dom, schloss, sights, buildings = karte.landmarks()
@@ -60,7 +75,7 @@ def base_map():
     for d in river:
         o.append('<path fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round" '
                  'stroke-linejoin="round" d="%s"/>' % (COL["river"], RIVER_MM, d))
-    o.append(ROADS)
+    o.append(karte.roads_svg(base, P, ROAD_MM, COL["road"]))
     o.append('<path fill="%s" stroke="%s" stroke-width="1" stroke-linejoin="round" d="%s"/>'
              % (COL["landmark"], COL["landmark"], " ".join(P.d(g, True) for g in landmarks)))
     return "\n".join(o)
@@ -117,7 +132,7 @@ def detail_map():
     o.append(fill(DCOL["flowerbed"], detail["flowerbed"]))
     o.append(fill(DCOL["water"], detail["water"]))
     o.append('<path fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round" '
-             'stroke-linejoin="round" d="%s"/>' % (COL["river"], RIVER_MM / ZOOM, " ".join(river)))
+             'stroke-linejoin="round" d="%s"/>' % (DCOL["river"], RIVER_MM / ZOOM, " ".join(river)))
     o.append('<path fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round" '
              'stroke-linejoin="round" d="%s"/>' % (DCOL["street"], 2.4 * u, " ".join(STREETS)))
     o.append(line(DCOL["path"], 1.0 * u, detail["path"]))
@@ -150,6 +165,14 @@ def map_with_lens(inner):
          '<rect x="-200" y="-200" width="400" height="400" fill="#fff"/>'
          '<circle cx="%s" cy="%s" r="%s" fill="#000"/></mask></defs>' % (LC[0], LC[1], LENS_MM)]
     o.append('<g clip-path="url(#c)" mask="url(#m)">%s</g>' % base_map())
+    if COL["keyline"]:
+        # silhouette of ring, glass and handle with a wide stroke, under the lens
+        k = ('fill="%s" stroke="%s" stroke-width="%s" stroke-linejoin="round"'
+             % (COL["keyline"], COL["keyline"], KEYLINE))
+        o.append('<g transform="translate(%s %s) scale(%s) translate(%s %s)">%s</g>'
+                 % (LC[0], LC[1], K, -LENS_C[0], -LENS_C[1],
+                    "".join('<path %s d="%s"/>' % (k, d)
+                            for d in (RING, GLASS, NECK, COLLAR, HANDLE, BAND1, BAND2))))
     o.append('<g clip-path="url(#g)"><g transform="translate(%s %s) scale(%s) translate(%s %s)">'
              '%s</g></g>' % (LC[0], LC[1], ZOOM, -LC[0], -LC[1], inner()))
     o.append('<g transform="translate(%s %s) scale(%s) translate(%s %s)">%s</g>'
@@ -175,10 +198,12 @@ def lettering(y):
     return "\n".join(o), y
 
 
-txt, y = lettering(DIAMETER_MM + 14)
-H = round(y + 1, 2)
-for name, inner in (("stadtplan-lupe-detail-hell", detail_map),):
-    body = '<g transform="translate(%s %s)">%s</g>\n%s' % (WIDTH_MM / 2, R, map_with_lens(inner), txt)
+for palette in PALETTES:
+    COL = PALETTES[palette]
+    name = "stadtplan-lupe-detail-" + palette
+    txt, y = lettering(DIAMETER_MM + 14)
+    H = round(y + 1, 2)
+    body = '<g transform="translate(%s %s)">%s</g>\n%s' % (WIDTH_MM / 2, R, map_with_lens(detail_map), txt)
     svg_file = os.path.join(HERE, name + ".svg")
     open(svg_file, "w").write(svg("%smm" % WIDTH_MM, "%smm" % H, body, "0 0 %s %s" % (WIDTH_MM, H)))
     export(svg_file, os.path.join(PNG_OUT, name + ".png"), WIDTH_MM, (AREA_MM[0] - WIDTH_MM) / 2, 0)

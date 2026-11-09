@@ -60,8 +60,10 @@ def render(svg_file, png_file, width_mm):
 
 
 def preview_tile(png_file, font):
-    """ImageMagick arguments for one preview tile: upload on white, grey frame = print area."""
-    return ["(", png_file, "-background", "#ffffff", "-flatten", "-resize", "400x",
+    """ImageMagick arguments for one preview tile: upload on white (on dark grey for
+    motifs for dark shirts), grey frame = print area."""
+    bg = "#3d4045" if "-dunkel" in os.path.basename(png_file) else "#ffffff"
+    return ["(", png_file, "-background", bg, "-flatten", "-resize", "400x",
             "-bordercolor", "#bbbbbb", "-border", "2",
             "-background", "#ffffff", "-gravity", "center", "-extent", "480x560",
             "-gravity", "south", "-splice", "0x50",
