@@ -338,8 +338,8 @@ def poster(t):
     top_qr = c.bottom(out, t["fg"], t["sub"], t["accent"],
                         CTA,
                         # Motiv der Zielgruppe: Quests, Erfolge, Rang – und dass es wirklich etwas bringt
-                        "StreetComplete ist wie eine Quest-Karte: Aufgaben lösen, Erfolge holen, aufsteigen. "
-                        "Nur dass jede Antwort echten Menschen hilft.",
+                        "StreetComplete ist wie eine Quest-Karte. "
+                        "Nur landet jede Antwort in OpenStreetMap – freie Daten, die Apps weltweit nutzen.",
                         qs=40, s1=7.0, s2=4.7, w1=700)
     assert base_y < top_qr - 6, (base_y, top_qr)
     return c.page(t["bg"], out)

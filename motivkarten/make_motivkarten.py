@@ -46,7 +46,8 @@ URL_CARD = druck.URL_STREETCOMPLETE
 
 BACK = {
     "head": ["Fehlt was?", "Trag es ein."],
-    "body": ["Kurze Fragen, ein Fingertipp genügt."],   # die App steht direkt darüber
+    # das Warum: wohin die Antwort geht (OSM ist keine Karte, sondern freie Daten)
+    "body": ["Deine Antwort landet in OpenStreetMap –", "freie Daten, die Apps weltweit nutzen."],
     "rule": ["Einzige Regel: Nur eintragen,", "was es wirklich gibt."],     # feste Zeilen
     "community": ["OpenStreetMap-Community Fulda", f"{druck.SHOW_WIKI} · {druck.SHOW_MATRIX}"],
 }
@@ -248,7 +249,7 @@ def back():
     mid = W / 2
     hs = fit(BACK["head"], 700, HEAD_BACK)
     y = lines_block(out, SAFE + 0.5, BACK["head"], hs, 700, lead=1.02, x=mid, anchor="middle")
-    qs = 25
+    qs = 22
     _, ver, n, module = druck.qr_path(URL_CARD, 0, 0, qs)
     pad = 4 * module                                    # Ruhezone: Grund ist weiß, nur frei halten
     qy = y + 1.2 + pad

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Mitmachkarte 55x85 mm hochkant, doppelseitig – für Leute, die schon angebissen haben und mehr wollen.
 
-Vorderseite: Logo, Begrüßung („Schön, dass du dabei bist.“) – im Stil der Motivkarten.
+Vorderseite: Logo, Frage und Antwort („Wir haben dich angefixt? Jetzt kommst du da nicht wieder raus.“) – im Stil der Motivkarten.
 Rückseite:   6 QR-Codes in drei Gruppen, geordnet nach dem nächsten Schritt:
              Loslegen (App, Orte) · Mehr machen (am PC, Fotos) · Mitreden (Chat, Wiki).
 
@@ -28,7 +28,8 @@ INK, GREY, ACCENT = druck.INK, druck.GREY, druck.ACCENT
 
 FRONT = {
     "kicker": "OPENSTREETMAP FULDA",
-    "head": ["Schön, dass du", "dabei bist."],
+    "head": ["Wir haben dich", "angefixt?"],
+    "head2": ["Jetzt kommst du da", "nicht wieder raus."],     # Antwort auf die Frage, wie am Aufsteller
     "sub": ["Hinten findest du alles,", "was du zum Loslegen brauchst."],
 }
 
@@ -69,16 +70,17 @@ def centered_lines(out, y, lines, size, weight, fill=INK, lead=1.12):
 
 
 def front():
-    """Wie die klassische Motivkarte: Logo, Schriftzug, Satz – nur mit Begrüßung statt Aufhänger."""
+    """Wie die klassische Motivkarte: Logo, Schriftzug, Satz – nur mit Frage und Antwort statt Aufhänger."""
     out = []
-    ls = 30
-    y = 8
+    ls = 24
+    y = 7
     out.append(logo_svg((W - ls) / 2, y, ls))
     y += ls + 3 + cap_height(500, 2.6)
     out.append(text(W / 2 + 0.55 / 2, y, FRONT["kicker"], 2.6, 500, GREY, "middle", spacing=0.55))
-    hs = fit(FRONT["head"], 700, 8.0, W - 2 * SAFE)
-    y = centered_lines(out, y + 5, FRONT["head"], hs, 700, lead=1.1)
-    y = centered_lines(out, y + 3.6, FRONT["sub"], 3.4, 500, ACCENT, lead=1.25)
+    hs = fit(FRONT["head"] + FRONT["head2"], 700, 8.0, W - 2 * SAFE)
+    y = centered_lines(out, y + 4.5, FRONT["head"], hs, 700, lead=1.1)
+    y = centered_lines(out, y + 5.0, FRONT["head2"], hs, 700, lead=1.1)
+    y = centered_lines(out, y + 3.4, FRONT["sub"], 3.4, 500, ACCENT, lead=1.25)
     assert y < H - SAFE - 2, ("Vorderseite zu voll", round(y, 1))
     return "#fff", out
 

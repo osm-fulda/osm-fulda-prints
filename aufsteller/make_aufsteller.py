@@ -11,7 +11,7 @@ Je ein A4-Blatt hoch, zweimal quer gefaltet, steht als Dreieck vor dem Stapel, v
     | Standfläche       |  nach innen umschlagen, unter die Rückseite schieben
     +-------------------+  297
 
-Schauseite: links Vorschau des Drucks, rechts direkte Aufforderung ("Steck mich ein!") + Text,
+Schauseite: links Vorschau des Drucks, rechts Spruch ("Wir haben dich angefixt? …") + wofür die Karte da ist,
 unten QR-Code zum Repo ("Vergriffen?").
 Vorschaubilder kommen aus den fertigen PNGs der anderen Drucke – die zuerst bauen.
 
@@ -45,15 +45,16 @@ A4 = ((210, 297), 0)                     # Aushänge, die auf A4 gezeichnet und 
 
 # Ein Aufsteller pro Oberkategorie, je vor seinen Stapel am Stand.
 # "single": Vorschaubilder (PNG, Format, Bildunterschrift oder None) links, Text rechts;
-#           Text als Absätze (Zwischenzeile halbfett oder None, Fließtext).
+#           Titel als Text oder Liste fester Zeilen; Text als Absätze (Zwischenzeile halbfett
+#           oder None, Fließtext oder Liste fester Zeilen).
 # "series": Aufforderung und Satz oben, darunter alle Motive der Reihe nebeneinander,
 #           je mit Namen und Zielgruppe – so sucht sich jeder das Motiv aus, das zu seinem Ort passt.
 STANDS = [
-    ("mitmachkarte", "single", "Steck mich ein!",
+    ("mitmachkarte", "single", ["Wir haben dich angefixt?", "", "Jetzt kommst du da", "nicht wieder raus."],
      [("mitmachkarte/mitmachkarte-vorne.png", CARD_UPRIGHT, None),
       ("mitmachkarte/mitmachkarte-hinten.png", CARD_UPRIGHT, None)],
-     [(None, "Für alle, die mitmachen wollen: Ich zeige dir, wie du die Karte besser machst – "
-             "per App, im Browser, mit Fotos – und wo du uns findest.")]),
+     [(None, ["Auf dieser Karte steht alles, was du brauchst:", "Apps, Fotos, am PC bearbeiten –",
+              "und wo du uns findest."])]),
     ("aushang", "series", "Häng mich auf!",
      [("aushang/aushang-klassisch.png", A5, ("Klassisch", "für alle")),
       ("aushang/aushang-gelb.png", A4, ("Gelb", "Politik, Daten")),
@@ -158,18 +159,27 @@ def face(images, head, body):
     # Text rechts, vertikal mittig
     tx = M + pw + 10
     tw = AW - M - tx
-    hs = min(HEAD_MAX, HEAD_MAX * tw / text_width(head, 700, HEAD_MAX))
+    heads = head if isinstance(head, list) else [head]     # feste Zeilen nach Sinn; "" = kleiner Abstand
+    hs = min(HEAD_MAX, *(HEAD_MAX * tw / text_width(h, 700, HEAD_MAX) for h in heads if h))
+    hlead = hs * 1.05
+    hsteps = [hlead * (0.35 if h == "" else 1) for h in heads[1:]]   # Abstand zur vorigen Zeile
     lines = []    # (Text, Gewicht, Abstand zur vorigen Grundlinie)
     for i, (sub, para) in enumerate(body):
         first = 6 + cap_height(400, BODY) if i == 0 else BODY * BODY_LEAD + PARA_GAP
         if sub:
             lines.append((sub, 600, first))
             first = BODY * BODY_LEAD
-        for j, line in enumerate(wrap(para, 400, BODY, tw)):
+        if isinstance(para, list):                  # feste Zeilen nach Sinn
+            assert all(text_width(l, 400, BODY) <= tw for l in para), f"{head}: Zeile zu breit"
+        for j, line in enumerate(para if isinstance(para, list) else wrap(para, 400, BODY, tw)):
             lines.append((line, 400, first if j == 0 else BODY * BODY_LEAD))
-    block = cap_height(700, hs) + sum(d for *_, d in lines)
+    block = cap_height(700, hs) + sum(hsteps) + sum(d for *_, d in lines)
     y = top + (bottom - top - block) / 2 + cap_height(700, hs)
-    out.append(text(tx, y, head, hs, 700, ACCENT))
+    for i, h in enumerate(heads):
+        if i:
+            y += hsteps[i - 1]
+        if h:
+            out.append(text(tx, y, h, hs, 700, ACCENT))
     for line, weight, d in lines:
         y += d
         out.append(text(tx, y, line, BODY, weight))
@@ -255,7 +265,7 @@ def main():
             f.write(svg)
         druck.png(fn, f"aufsteller-{name}.png", dpi=100)
         svgs.append(fn)
-        print(f"  {name:13} {head:16} Repo-QR {module:.2f} mm/Modul")
+        print(f"  {name:13} {' '.join(head) if isinstance(head, list) else head:28} Repo-QR {module:.2f} mm/Modul")
     with tempfile.TemporaryDirectory() as tmp:
         raw = os.path.join(tmp, "roh.pdf")
         druck.pdf(svgs, raw)
