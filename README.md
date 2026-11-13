@@ -44,16 +44,17 @@ Druckbögen (10 Karten, Seite 2 = Rückseite): [`klassisch`](motivkarten/motivka
 | <img src="mitmachkarte/mitmachkarte-vorne.png" width="130" alt="Mitmachkarte vorne"> | <img src="mitmachkarte/mitmachkarte-hinten.png" width="130" alt="Mitmachkarte hinten"> |
 |:---:|:---:|
 
-Visitenkarte 55×85 hochkant, doppelseitig, zum Einstecken. Vorne die Begrüßung, hinten sechs
-QR-Codes nach dem nächsten Schritt: **Loslegen** (StreetComplete, OSMapp), **Mehr machen**
-(am PC auf openstreetmap.org, Fotos mit Panoramax), **Mitreden** (Chat, Wiki Fulda).
+Visitenkarte 55×85 hochkant, doppelseitig, zum Einstecken. Vorne „Wir haben dich angefixt? Jetzt
+kommst du da nicht wieder raus.“, hinten sechs QR-Codes nach dem nächsten Schritt: **Loslegen**
+(StreetComplete, OSMapp), **Mehr machen** (am PC auf openstreetmap.org, Fotos mit Panoramax),
+**Mitreden** (Chat, Wiki Fulda).
 Druckbogen: [`mitmachkarte-a4.pdf`](mitmachkarte/mitmachkarte-a4.pdf) (10 Karten).
 
 ## Aufsteller
 
 | <img src="aufsteller/aufsteller-aushang.png" width="130" alt="Aufsteller Aushänge"> | <img src="aufsteller/aufsteller-motivkarten.png" width="130" alt="Aufsteller Motivkarten"> | <img src="aufsteller/aufsteller-mitmachkarte.png" width="130" alt="Aufsteller Mitmachkarte"> |
 |:---:|:---:|:---:|
-| „Häng mich auf!“ – alle fünf Aushänge, je mit Zielgruppe | „Leg mich aus!“ – alle fünf Motivkarten, je mit Zielgruppe | „Steck mich ein!“ – Mitmachkarte |
+| „Häng mich auf!“ – alle fünf Aushänge, je mit Zielgruppe | „Leg mich aus!“ – alle fünf Motivkarten, je mit Zielgruppe | „Wir haben dich angefixt?“ – Mitmachkarte, für alle, die schon mitmachen wollen |
 
 Tischaufsteller A4, zum Dreieck gefaltet, von beiden Seiten lesbar, mit QR-Code zu diesem Repo
 („Vergriffen?“). Alle drei in [`aufsteller-a4.pdf`](aufsteller/aufsteller-a4.pdf) (3 Seiten).
