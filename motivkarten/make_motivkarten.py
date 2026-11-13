@@ -40,10 +40,6 @@ INK, GREY, ACCENT = druck.INK, druck.GREY, druck.ACCENT
 VS = W / 210                 # Maßstab virtuell → Karte
 VW, VH, VM = 210, H / VS, 16
 
-# Alle Karten nutzen denselben Code. Später die Weiterleitung, z. B. https://go.osm-fulda.de/k,
-# damit sich Scans der Karten zählen lassen – erst umstellen, wenn sie live ist.
-URL_CARD = druck.URL_STREETCOMPLETE
-
 BACK = {
     "head": ["Fehlt was?", "Trag es ein."],
     # das Warum: wohin die Antwort geht (OSM ist keine Karte, sondern freie Daten)
@@ -243,18 +239,18 @@ FRONTS = {"klassisch": front_klassisch, "gelb": front_gelb, "pixel": front_pixel
 
 # --- Rückseite ----------------------------------------------------------------
 
-def back():
+def back(url):
     """Alles mittig: Frage, Code, Adresse, zwei kurze Absätze, Absender als Gruppe aus Logo und Text."""
     out = []
     mid = W / 2
     hs = fit(BACK["head"], 700, HEAD_BACK)
     y = lines_block(out, SAFE + 0.5, BACK["head"], hs, 700, lead=1.02, x=mid, anchor="middle")
     qs = 22
-    _, ver, n, module = druck.qr_path(URL_CARD, 0, 0, qs)
+    _, ver, n, module = druck.qr_path(url, 0, 0, qs)
     pad = 4 * module                                    # Ruhezone: Grund ist weiß, nur frei halten
     qy = y + 1.2 + pad
-    d = druck.qr_path(URL_CARD, (W - qs) / 2, qy, qs)[0]
-    print(f"  QR {URL_CARD}: v{ver} {n}x{n} Module, {module:.2f} mm/Modul")
+    d = druck.qr_path(url, (W - qs) / 2, qy, qs)[0]
+    print(f"  QR {url}: v{ver} {n}x{n} Module, {module:.2f} mm/Modul")
     out.append(f'<path d="{d}" fill="#000"/>')
     y = qy + qs + 1.4 + cap(700, 3.6)
     out.append(text(mid, y, druck.SHOW_STREETCOMPLETE, 3.6, 700, ACCENT, "middle"))
@@ -322,16 +318,18 @@ def overview(out="vorschau.png", h=700, gap=20, head=44):
 def main():
     os.chdir(HERE)
     druck.use_project_fonts()
-    bg, body = back()
-    write("motivkarte-hinten.svg", portrait(bg, body))
-    write("bogen-hinten.svg", landscape(bg, body, "hinten"))
-    druck.png("motivkarte-hinten.svg", "motivkarte-hinten.png", dpi=400)
     for key, make in FRONTS.items():
+        # Rückseite sieht überall gleich aus, nur der QR-Code ist je Motiv ein anderer Pfad
+        bg, body = back(druck.go(f"k/{key}"))
+        write(f"bogen-hinten-{key}.svg", landscape(bg, body, "hinten"))
+        if key == "klassisch":      # Vorschau der Rückseite
+            write("motivkarte-hinten.svg", portrait(bg, body))
+            druck.png("motivkarte-hinten.svg", "motivkarte-hinten.png", dpi=400)
         bg, body = make()
         write(f"motivkarte-{key}.svg", portrait(bg, body))
         write(f"bogen-{key}.svg", landscape(bg, body, "vorne"))
         druck.png(f"motivkarte-{key}.svg", f"motivkarte-{key}.png", dpi=400)
-        make_a4.build(f"bogen-{key}.svg", "bogen-hinten.svg", f"motivkarte-{key}-a4.pdf")
+        make_a4.build(f"bogen-{key}.svg", f"bogen-hinten-{key}.svg", f"motivkarte-{key}-a4.pdf")
     overview()
 
 

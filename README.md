@@ -83,7 +83,13 @@ Braucht: Python 3 mit `qrcode`, `fonttools`, `Pillow`; `rsvg-convert` (librsvg);
 (Ghostscript – komprimiert die Bögen von ~18 MB auf ~2 MB). Zum Prüfen der Codes: `zbarimg`.
 Die Schriften werden aus `gemeinsam/fonts/` geladen, installieren ist nicht nötig.
 
-Texte, Labels und URLs stehen jeweils oben im Skript, gemeinsame URLs in `gemeinsam/druck.py`.
+Texte, Labels und Adressen stehen jeweils oben im Skript, gemeinsame in `gemeinsam/druck.py`.
+
+**QR-Codes** zeigen nie direkt aufs Ziel, sondern auf `go.osm-fulda.de/<pfad>`, je Drucksache ein
+eigener Pfad (`a/<motiv>` Aushänge, `k/<motiv>` Motivkarten, `m/<name>` Mitmachkarte, `drucken`
+Aufsteller). So lässt sich ein Ziel ändern, ohne neu zu drucken, und man sieht, was gescannt wird.
+Die Ziele stehen im gitops-Repo (`apps/redirects/go.yaml`); ein neuer Pfad muss dort zuerst
+eingetragen sein. Gedruckte Pfade nie ändern.
 Jedes Skript prüft, dass sich nichts überlagert und alles in die Fläche passt, und bricht sonst ab.
 
 **Achtung:** Die Skripte überschreiben die SVGs. Änderungen am besten im Skript machen; die

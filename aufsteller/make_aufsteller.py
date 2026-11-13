@@ -83,7 +83,7 @@ BODY_LEAD = 1.32
 PARA_GAP = 3.0
 CAPTION = 3.2
 FOOTER = ["Vergriffen? Alle Druckvorlagen zum Selbstdrucken:", "github.com/osm-fulda/osm-fulda-prints"]
-FOOTER_URL = "https://github.com/osm-fulda/osm-fulda-prints"
+FOOTER_URL = druck.go("drucken")   # → github.com/osm-fulda/osm-fulda-prints
 FOOTER_SIZE = 3.4
 FOOTER_QR = 14.0
 
