@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Schul-Aushang „Level 1: Schulweg“ in Pixel-Optik (A4 hoch), helle und dunkle Fassung.
+"""Aushang „Level 1: Dein Viertel“ in Pixel-Optik (A5, gezeichnet auf A4), helle und dunkle Fassung.
 
-  aushang-schule-pixel.png/pdf          – helle Fassung, wird gedruckt
-  aushang-schule-pixel-dunkel.png/pdf   – optional (python3 make_pixel.py dunkel), viel Toner
+  aushang-pixel.png, -a4.pdf          – helle Fassung, wird gedruckt (Bogen, 2x A5)
+  aushang-pixel-dunkel.png, -a4.pdf   – optional (python3 make_pixel.py dunkel), viel Toner
 
 Regeln, nach denen das Blatt gebaut ist:
-- Eine Geschichte: Titel, Bild, Spruch und QR-Text reden alle vom Schulweg.
+- Eine Geschichte: Titel, Bild, Spruch und QR-Text reden alle vom eigenen Viertel.
 - Lesereihenfolge 1-2-3-4: Titel → Spielbild → Spruch → QR. Nichts sonst konkurriert.
 - Alles, was zum Spiel gehört (Erfolg, Anzeige, Lücken), liegt IM Bild, wie auf einem Bildschirm.
 - Pixel-Grafik: ein Grundpixel U. Jedes Pixel ist ein ganzes Vielfaches davon (keine „Mixels“),
@@ -118,6 +118,30 @@ def feet(out, x, y, k, col):
     sprite(out, x + 7 * k * U, y, k, FOOT_R, {"X": col})
 
 
+# Erfolg im Spielbild: ein echter Erfolg aus StreetComplete, Symbol 13 × 13 Pixel (bei k = 2: 26 × 26 U).
+# „Bürger“: Aufgaben, die im Alltag in der Stadt helfen. (Schulfassung: „Fußgänger“ mit feet.)
+HOUSE = ["......X......",
+         ".....XXX.....",
+         "....XXXXX....",
+         "...XXXXXXX...",
+         "..XXXXXXXXX..",
+         ".XXXXXXXXXXX.",
+         "XXXXXXXXXXXXX",
+         ".XXXXXXXXXXX.",
+         ".X..XXXXXXXX.",
+         ".X..XX...XXX.",
+         ".XXXXX...XXX.",
+         ".XXXXX...XXX.",
+         ".XXXXX...XXX."]
+
+
+def house(out, x, y, k, col):
+    sprite(out, x, y, k, HOUSE, {"X": col})
+
+
+ACHIEVEMENT, ACHIEVEMENT_ICON = "BÜRGER", house
+
+
 # --- Karte -------------------------------------------------------------------
 
 class Grid:
@@ -225,12 +249,12 @@ def game_screen(out, x0, y0, cols, rows):
         sprite(out, mx + 4 * U, my + 4 * U, 2, QMARK, {"X": "#ffffff"})
 
     # Erfolg oben, wie eine Meldung im Spiel
-    l1, l2 = "ERFOLG FREIGESCHALTET", "FUSSGÄNGER"
+    l1, l2 = "ERFOLG FREIGESCHALTET", ACHIEVEMENT
     tw = 4 * U + 26 * U + 4 * U + max(pwidth(l1, 1), pwidth(l2, 2)) + 5 * U
     th = 34 * U
     tx, ty = x0 + round((cols * T - tw) / 2 / U) * U, y0 + T
     panel(out, tx, ty, tw, th, UI_BG, GOLD, 2)
-    feet(out, tx + 4 * U, ty + 4 * U, 2, GOLD)
+    ACHIEVEMENT_ICON(out, tx + 4 * U, ty + 4 * U, 2, GOLD)
     out.append(ptext(tx + 34 * U, ty + 8 * U, l1, 1, GOLD))
     out.append(ptext(tx + 34 * U, ty + 19 * U, l2, 2, UI_TEXT))
 
@@ -258,6 +282,12 @@ TITLE_FONT = {
     "G": [".XXXX", "X....", "X....", "X..XX", "X...X", "X...X", ".XXXX"],
     "V": ["X...X", "X...X", "X...X", "X...X", ".X.X.", ".X.X.", "..X.."],
     "1": ["..X..", ".XX..", "..X..", "..X..", "..X..", "..X..", ".XXX."],
+    "I": ["XXXXX", "..X..", "..X..", "..X..", "..X..", "..X..", "XXXXX"],   # für VIERTEL / DEIN
+    "R": ["XXXX.", "X...X", "X...X", "XXXX.", "X.X..", "X..X.", "X...X"],
+    "T": ["XXXXX", "..X..", "..X..", "..X..", "..X..", "..X..", "..X.."],
+    "D": ["XXXX.", "X...X", "X...X", "X...X", "X...X", "X...X", "XXXX."],
+    "N": ["X...X", "XX..X", "X.X.X", "X.X.X", "X..XX", "X...X", "X...X"],
+    ":": [".....", "..X..", "..X..", ".....", "..X..", "..X..", "....."],
     " ": ["....."] * 7,
 }
 
@@ -275,13 +305,21 @@ def title_width(s, k):
 
 # --- Seite -------------------------------------------------------------------
 
+# Texte der Geschichte. TITLE: Zeilen (Text, Pixelgröße k, Farbe aus dem Thema);
+# MAP_ROWS: Höhe des Spielbilds in Kacheln – zweizeiliger Titel in voller Größe, darum niedriger (45 → 34).
+TITLE = [("LEVEL 1", 2, "level"), ("DEIN", 5, "fg"), ("VIERTEL", 5, "fg")]
+MAP_ROWS = 34
+SLOGAN = "ein Spiel. Dein echtes Viertel."      # hinter dem grünen „(K)“
+CTA = "Wie viele Lücken hat dein Viertel? Scan und sieh nach."
+
 def poster(t):
     out = ['<g shape-rendering="crispEdges">']
     y = M
-    y += title(out, M, y, "LEVEL 1", 2, t["level"]) + 5
-    y += title(out, M, y, "SCHULWEG", 5, t["fg"]) + 7
+    for i, (s, k, col) in enumerate(TITLE):
+        assert title_width(s, k) <= TW, s
+        y += title(out, M, y, s, k, t[col]) + (7 if i == len(TITLE) - 1 else 5)
 
-    cols, rows = int(TW // T), 45
+    cols, rows = int(TW // T), MAP_ROWS
     mw, mh = cols * T, rows * T
     mx = M + (TW - mw) / 2
     out.append(f'<rect x="{mx - 2 * U:.2f}" y="{y - 2 * U:.2f}" width="{mw + 4 * U:.2f}" height="{mh + 4 * U:.2f}" '
@@ -295,26 +333,25 @@ def poster(t):
     ss = 13
     base_y = y + druck.cap_height(700, ss)
     out.append(f'<text x="{M}" y="{base_y:.2f}" font-size="{ss}" font-weight="700" fill="{t["fg"]}">'
-               f'<tspan fill="{t["accent"]}">(K)</tspan>ein Spiel. Dein echter Schulweg.</text>')
+               f'<tspan fill="{t["accent"]}">(K)</tspan>{SLOGAN}</text>')
     out.append("</g>")
     top_qr = c.bottom(out, t["fg"], t["sub"], t["accent"],
-                        "Wie viele Lücken hat dein Schulweg? Scan und sieh nach.",
+                        CTA,
                         # Motiv der Zielgruppe: Quests, Erfolge, Rang – und dass es wirklich etwas bringt
                         "StreetComplete ist wie eine Quest-Karte: Aufgaben lösen, Erfolge holen, aufsteigen. "
                         "Nur dass jede Antwort echten Menschen hilft.",
-                        qs=40, s1=7.0, s2=4.7, w1=700, rule_in_text=True)
+                        qs=40, s1=7.0, s2=4.7, w1=700)
     assert base_y < top_qr - 6, (base_y, top_qr)
-    assert title_width("SCHULWEG", 5) <= TW
     return c.page(t["bg"], out)
 
 
 def main():
     druck.use_project_fonts()
-    # Gedruckt wird die helle Fassung (weniger Toner, sauber aus dem Schulkopierer);
+    # Gedruckt wird die helle Fassung (weniger Toner, sauber aus jedem Kopierer);
     # die dunkle bleibt als Option: python3 make_pixel.py dunkel
     import sys
     theme = sys.argv[1] if len(sys.argv) > 1 else "hell"
-    c.build("aushang-schule-pixel" + ("" if theme == "hell" else f"-{theme}"), poster(THEMES[theme]))
+    c.build("aushang-pixel" + ("" if theme == "hell" else f"-{theme}"), poster(THEMES[theme]))
 
 
 if __name__ == "__main__":

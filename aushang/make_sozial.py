@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Schul-Aushang für sozial Engagierte: „Für dich ein Bordstein. Für andere ein Berg.“ (A4 hoch).
+"""Aushang für sozial Engagierte: „Für dich ein Bordstein. Für andere ein Berg.“ (A5, gezeichnet auf A4).
 
-  aushang-schule-sozial.png/pdf
+  aushang-sozial.png, aushang-sozial-a4.pdf (Bogen, 2x A5)
 
 Idee: Perspektivwechsel durch Größe. Ein Bordstein als Felswand mit Gipfelfahne, mit Maßpfeil „12 cm“;
 davor vier Menschen (Rollator, Kinderwagen, Langstock, Rollstuhl). Motiv der Zielgruppe: anderen helfen, Barrieren sichtbar machen.
@@ -195,7 +195,7 @@ def poster():
     # Der Fels steht rechts und reicht fast bis oben. Der Titel nutzt den Himmel links darüber,
     # die Menschen stehen unten links am Fuß. Alliteration Bordstein – Berg.
     x_cliff = 134
-    top, ground = M + 24, M + 180
+    top, ground = M + 24, M + 176
     y = lines_block(out, M + 6, ["Für dich", "ein Bordstein."], 19, 700, c.INK, lead=1.02)
     y = lines_block(out, y + 9, ["Für andere", "ein Berg."], 27, 700, ACCENT, lead=0.98)
     assert M + druck.text_width("ein Bordstein.", 700, 19) < x_cliff - 6
@@ -208,7 +208,7 @@ def poster():
                       # beide früheren Textblöcke in einem: was die App tut und was die Antworten bewirken
                       "Die App StreetComplete fragt dich unterwegs nach Stufen, Rampen und Bordsteinen. "
                       "Mit deinen Antworten planen andere ihren Weg – zum Beispiel mit Wheelmap.",
-                      qs=48, s1=9.0, s2=5.2, w1=700, qr_right=True,
+                      qs=51, s1=9.0, s2=5.0, w1=700, qr_right=True,
                       url_label="Scan und hilf mit → streetcomplete.app")   # Pfeil zeigt zum QR-Code
     assert y < qtop - 6, (y, qtop)
     return c.page(BG, out)
@@ -216,7 +216,7 @@ def poster():
 
 def main():
     druck.use_project_fonts()
-    c.build("aushang-schule-sozial", poster())
+    c.build("aushang-sozial", poster())
 
 
 if __name__ == "__main__":

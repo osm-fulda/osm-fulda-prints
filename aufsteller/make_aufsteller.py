@@ -39,28 +39,37 @@ M = 12                # Rand links/rechts
 PAD = 8               # Abstand zum Falz
 FOLD_COLOR = "#bbb"
 
-CARD = ((85, 55), druck.BLEED)   # Endformat, Beschnitt im PNG
+CARD_UPRIGHT = ((55, 85), druck.BLEED)   # Karten hochkant, Beschnitt im PNG
 A5 = ((148, 210), 0)
-# Vorschaubilder: (PNG, Format, Bildunterschrift oder None) – Hochformate nebeneinander, sonst untereinander.
-# Text: Absätze als (Zwischenzeile halbfett oder None, Fließtext).
-STANDS = [  # (Name, Vorschaubilder, Aufforderung, Absätze)
-    ("mitmachkarte",
-     [("mitmachkarte/mitmachkarte-vorne.png", CARD, None),
-      ("mitmachkarte/mitmachkarte-hinten.png", CARD, None)],
-     "Steck mich ein!",
+A4 = ((210, 297), 0)                     # Aushänge, die auf A4 gezeichnet und als A5 gedruckt werden
+
+# Ein Aufsteller pro Oberkategorie, je vor seinen Stapel am Stand.
+# "single": Vorschaubilder (PNG, Format, Bildunterschrift oder None) links, Text rechts;
+#           Text als Absätze (Zwischenzeile halbfett oder None, Fließtext).
+# "series": Aufforderung und Satz oben, darunter alle Motive der Reihe nebeneinander,
+#           je mit Namen und Zielgruppe – so sucht sich jeder das Motiv aus, das zu seinem Ort passt.
+STANDS = [
+    ("mitmachkarte", "single", "Steck mich ein!",
+     [("mitmachkarte/mitmachkarte-vorne.png", CARD_UPRIGHT, None),
+      ("mitmachkarte/mitmachkarte-hinten.png", CARD_UPRIGHT, None)],
      [(None, "Für alle, die mitmachen wollen: Ich zeige dir, wie du die Karte besser machst – "
              "per App, im Browser, mit Fotos – und wo du uns findest.")]),
-    ("aushang",
-     [("aushang/aushang-vorne.png", A5, None)],
-     "Häng mich auf!",
-     [(None, "Ins Schaufenster, an die Pinnwand, ans Schwarze Brett. Ich komme in zwei Fassungen:"),
-      ("Für Glasscheiben: beidseitig bedruckt", "Von innen und außen lesbar."),
-      ("Für Pinnwand und Brett: einseitig", "Die Rückseite sieht ja keiner.")]),
-    ("infokarte",
-     [("infokarte/infokarte.png", CARD, None)],
-     "Leg mich aus!",
-     [(None, "Ins Wartezimmer, ins Café, in den Waschsalon – überall, wo Leute warten. "
-             "Nimm gleich ein paar mit.")]),
+    ("aushang", "series", "Häng mich auf!",
+     [("aushang/aushang-klassisch.png", A5, ("Klassisch", "für alle")),
+      ("aushang/aushang-gelb.png", A4, ("Gelb", "Politik, Daten")),
+      ("aushang/aushang-pixel.png", A4, ("Pixel", "Gamer")),
+      ("aushang/aushang-pappe.png", A4, ("Pappe", "Umwelt, Klima")),
+      ("aushang/aushang-sozial.png", A4, ("Sozial", "Barrierefreiheit"))],
+     "Ans Schwarze Brett, an die Pinnwand, ins Schaufenster. Such dir das Motiv aus, "
+     "das zu den Leuten dort passt."),
+    ("motivkarten", "series", "Leg mich aus!",
+     [("motivkarten/motivkarte-klassisch.png", CARD_UPRIGHT, ("Klassisch", "für alle")),
+      ("motivkarten/motivkarte-gelb.png", CARD_UPRIGHT, ("Gelb", "Politik, Daten")),
+      ("motivkarten/motivkarte-pixel.png", CARD_UPRIGHT, ("Pixel", "Gamer")),
+      ("motivkarten/motivkarte-pappe.png", CARD_UPRIGHT, ("Pappe", "Umwelt, Klima")),
+      ("motivkarten/motivkarte-sozial.png", CARD_UPRIGHT, ("Sozial", "Barrierefreiheit"))],
+     "Ins Wartezimmer, ins Café, in den Jugendtreff – überall, wo Leute warten. "
+     "Such dir ein Motiv aus und nimm gleich ein paar mit."),
 ]
 
 KICKER = "OPENSTREETMAP FULDA · KOSTENLOS"
@@ -168,8 +177,57 @@ def face(images, head, body):
     return out, module
 
 
-def sheet(images, head, body):
-    f, module = face(images, head, body)
+SERIES_HEAD = 13.0
+SERIES_BODY = 4.8
+SERIES_GAP = 4.5                 # zwischen den Vorschaubildern
+NAME_SIZE, ROLE_SIZE = 3.8, 3.2  # Bildunterschrift: Motiv und Zielgruppe
+
+
+def face_series(items, head, intro):
+    """Schauseite für eine Reihe: Aufforderung links, Satz rechts daneben, darunter alle Motive."""
+    out = []
+    ky = PAD + cap_height(500, KICKER_SIZE)
+    out.append(text(AW / 2, ky, KICKER, KICKER_SIZE, 500, GREY, anchor="middle", spacing=0.5))
+    fy, module, foot = footer()
+    out.extend(foot)
+    top, bottom = ky + 6, fy - 5
+
+    # Kopfzeile: Aufforderung + Satz, gemeinsam vertikal mittig
+    hw = text_width(head, 700, SERIES_HEAD)
+    tx = M + hw + 8
+    lines = wrap(intro, 400, SERIES_BODY, AW - M - tx)
+    lead = SERIES_BODY * BODY_LEAD
+    body_h = cap_height(400, SERIES_BODY) + (len(lines) - 1) * lead
+    row_h = max(cap_height(700, SERIES_HEAD), body_h)
+    out.append(text(M, top + (row_h + cap_height(700, SERIES_HEAD)) / 2, head, SERIES_HEAD, 700, ACCENT))
+    y = top + (row_h - body_h) / 2 + cap_height(400, SERIES_BODY)
+    for i, line in enumerate(lines):
+        out.append(text(tx, y + i * lead, line, SERIES_BODY, 400))
+
+    # Motive nebeneinander, so groß wie Breite und Höhe erlauben, mittig
+    n = len(items)
+    cap_h = 2.2 + cap_height(600, NAME_SIZE) + 1.6 + cap_height(500, ROLE_SIZE)
+    y0 = top + row_h + 6
+    avail_h = bottom - y0 - cap_h
+    ratios = [size[1] / size[0] for _, (size, _), _ in items]
+    iw = min((AW - 2 * M - SERIES_GAP * (n - 1)) / n, avail_h / max(ratios))
+    assert iw > 25, f"{head}: Vorschaubilder zu klein ({iw:.1f} mm)"
+    x0 = (AW - n * iw - SERIES_GAP * (n - 1)) / 2
+    ih_max = iw * max(ratios)
+    base = y0 + (avail_h - ih_max) / 2 + ih_max      # Reihe mittig im freien Raum; Bilder unten bündig
+    for i, (path, (size, bleed), (name, role)) in enumerate(items):
+        x = x0 + i * (iw + SERIES_GAP)
+        ih = iw * size[1] / size[0]
+        out.extend(preview(path, size, bleed, x, base - ih, iw))
+        ny = base + 2.2 + cap_height(600, NAME_SIZE)
+        out.append(text(x + iw / 2, ny, name, NAME_SIZE, 600, INK, anchor="middle"))
+        out.append(text(x + iw / 2, ny + 1.6 + cap_height(500, ROLE_SIZE), role, ROLE_SIZE, 500, GREY,
+                        anchor="middle"))
+    return out, module
+
+
+def sheet(kind, head, images, body):
+    f, module = (face if kind == "single" else face_series)(images, head, body)
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{AW}mm" height="{AH}mm" viewBox="0 0 {AW} {AH}">',
            f'<rect width="{AW}" height="{AH}" fill="#fff"/>',
            f'<g font-family="{druck.FONT}">',
@@ -190,8 +248,8 @@ def main():
     os.chdir(HERE)
     druck.use_project_fonts()
     svgs = []
-    for name, images, head, body in STANDS:
-        svg, module = sheet(images, head, body)
+    for name, kind, head, images, body in STANDS:
+        svg, module = sheet(kind, head, images, body)
         fn = f"aufsteller-{name}.svg"
         with open(fn, "w") as f:
             f.write(svg)
@@ -202,7 +260,7 @@ def main():
         raw = os.path.join(tmp, "roh.pdf")
         druck.pdf(svgs, raw)
         make_a4.compress(raw, "aufsteller-a4.pdf")
-    print("aufsteller-a4.pdf geschrieben (3 Seiten)")
+    print(f"aufsteller-a4.pdf geschrieben ({len(STANDS)} Seiten)")
 
 
 if __name__ == "__main__":

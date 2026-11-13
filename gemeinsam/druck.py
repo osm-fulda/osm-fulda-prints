@@ -25,21 +25,21 @@ ACCENT = "#3f7d32"     # Grün passend zur Karte im Titelbild
 W, H = 85, 55          # Kartenformat
 BLEED = 3              # Beschnitt rundum
 
-URL_OSM = "https://openstreetmap.de/osm/"
 URL_WIKI = "https://wiki.openstreetmap.org/wiki/Fulda"
 # Weiterleitung auf https://matrix.to/#/#osm-fulda-space:shivering-isles.com (eigene Domain, Ziel änderbar)
 URL_MATRIX = "https://chat.osm-fulda.de/"
 URL_STREETCOMPLETE = "https://streetcomplete.app/"
 URL_OSMAPP = "https://osmapp.org/de"
 URL_PANORAMAX = "https://panorama.osm-fulda.de/"
+URL_OSM_ORG = "https://www.openstreetmap.org/"    # am Rechner bearbeiten (Editor iD im Browser)
 
 # Zum Abtippen unter den QR-Codes (manche scannen fremde QR-Codes lieber nicht)
-SHOW_OSM = "openstreetmap.de/osm"
 SHOW_WIKI = "osm.wiki/Fulda"      # Weiterleitung aufs Fulda-Wiki
 SHOW_MATRIX = "chat.osm-fulda.de"
 SHOW_STREETCOMPLETE = "streetcomplete.app"
 SHOW_OSMAPP = "osmapp.org"
 SHOW_PANORAMAX = "panorama.osm-fulda.de"
+SHOW_OSM_ORG = "openstreetmap.org"
 
 # --- Schrift -----------------------------------------------------------------
 
@@ -127,15 +127,30 @@ def logo_svg(x, y, size, dpi=1200):
     return f'<image x="{x:.2f}" y="{y:.2f}" width="{size}" height="{size}" href="{href}"/>'
 
 
-def card_page(body):
-    """Karten-SVG 85x55 mm + Beschnitt; body in Kartenkoordinaten (0,0 = Endformat-Ecke)."""
-    pw, ph = W + 2 * BLEED, H + 2 * BLEED
+def card_page_upright(bg, body):
+    """Karte hochkant 55x85 mm + Beschnitt; body in Kartenkoordinaten (0,0 = Endformat-Ecke). Vorschau/PDF."""
+    w, h = H, W
     return "\n".join([
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{pw}mm" height="{ph}mm" viewBox="0 0 {pw} {ph}">',
-        f'<rect width="{pw}" height="{ph}" fill="#fff"/>',
-        f'<g transform="translate({BLEED},{BLEED})" font-family="{FONT}" fill="{INK}">',
-        *body,
-        "</g></svg>",
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w + 2 * BLEED}mm" height="{h + 2 * BLEED}mm" '
+        f'viewBox="{-BLEED} {-BLEED} {w + 2 * BLEED} {h + 2 * BLEED}">',
+        f'<rect x="{-BLEED}" y="{-BLEED}" width="{w + 2 * BLEED}" height="{h + 2 * BLEED}" fill="{bg}"/>',
+        f'<g font-family="{FONT}">', *body, "</g></svg>",
+    ])
+
+
+def card_page_rotated(bg, body, side):
+    """Dieselbe Hochkant-Karte quer gelegt (85x55 + Beschnitt) für den Bogen aus make_a4.py.
+
+    side="vorne": gegen den Uhrzeigersinn (Oberkante links), "hinten": im Uhrzeigersinn (Oberkante rechts).
+    Nach Duplex „an langer Kante spiegeln“ stehen dann beide Seiten aufrecht, wenn man die Karte
+    seitlich umdreht.
+    """
+    m = f"matrix(0 -1 1 0 0 {H})" if side == "vorne" else f"matrix(0 1 -1 0 {W} 0)"
+    return "\n".join([
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{W + 2 * BLEED}mm" height="{H + 2 * BLEED}mm" '
+        f'viewBox="{-BLEED} {-BLEED} {W + 2 * BLEED} {H + 2 * BLEED}">',
+        f'<rect x="{-BLEED}" y="{-BLEED}" width="{W + 2 * BLEED}" height="{H + 2 * BLEED}" fill="{bg}"/>',
+        f'<g transform="{m}" font-family="{FONT}">', *body, "</g></svg>",
     ])
 
 

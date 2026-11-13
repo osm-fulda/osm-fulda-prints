@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Schul-Aushang für Umweltbewusste: Demo-Pappschild „Mapping for Future“ (A4 hoch).
+"""Aushang für Umweltbewusste: Demo-Pappschild „Mapping for Future“ (A5, gezeichnet auf A4).
 
-  aushang-schule-pappe.png/pdf
+  aushang-pappe.png, aushang-pappe-a4.pdf (Bogen, 2x A5)
 
 Idee: Ästhetik der Klima-Demos (Pappe, Filzstift, Klebeband) und ein Wortspiel auf „Fridays for Future“,
 gewendet auf OpenStreetMap. Ein Bild, eine Botschaft, ein QR-Code zu StreetComplete.
@@ -207,7 +207,7 @@ def poster():
     sw, sh = TW - 4, 128
     stick_x = W / 2
     end = main_sign(out, stick_x, M + 27 + sh / 2, sw, sh, -4, stick=H)   # oben Platz für Himmel
-    y0 = end + 14
+    y0 = end + 7
 
     # rechts: QR-Zettel unten ans Schild geklebt; darunter ein Streifen Klebeband mit „Scan mich!“ quer über den Pfosten
     qs = 40
@@ -239,16 +239,23 @@ def poster():
     assert all(druck.text_width(l, 600, 5.6) <= lw for l in ["Was du in OpenStreetMap einträgst,",
                                                               "über zwei Millionen Freiwillige weltweit."])
     foot = H - M + 3
-    out.append(text(M, foot - 5.5, "OpenStreetMap-Community Fulda · osm.wiki/Fulda", 3.6, 600, "#2b4a5e"))
+    # Absender zweizeilig links vom Pfosten (Name dunkel, Adressen grün), darunter klein die Regel
+    fy = foot - 6.5
+    fw = c.footer(out, M, fy, c.INK, PEN_GREEN, two_lines=True)
+    # Linke Kante des Pfostens auf Höhe der Zeile (Schild samt Pfosten um -4° gedreht, Latte 10 mm breit)
+    a = math.radians(4)
+    top_line = fy - c.FOOTER_SIZE * 1.25 - druck.cap_height(700, c.FOOTER_SIZE)
+    pole = stick_x - 5 * math.cos(a) + (top_line - (M + 27 + sh / 2)) * math.sin(a)
+    assert M + fw < pole - 3, "Fußzeile läuft in den Pfosten"
     out.append(text(M, foot, "Einzige Regel: Nur eintragen, was es wirklich gibt.", 3.6, 500, "#2b4a5e"))
-    assert y < foot - 12, (y, foot)
+    assert y < top_line - 4, (round(y, 1), round(top_line - 4, 1))
     assert ly + lh < H - 4, "Klebeband ragt aus dem Blatt"
     return c.page(BG, out)
 
 
 def main():
     druck.use_project_fonts()
-    c.build("aushang-schule-pappe", poster())
+    c.build("aushang-pappe", poster())
 
 
 if __name__ == "__main__":

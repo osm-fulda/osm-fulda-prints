@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""Gemeinsame Bausteine der Schul-Aushänge (A4 hoch): Text, QR-Feld unten, Seite, Bauen.
+"""Gemeinsame Bausteine der Aushänge: Text, QR-Feld unten, Seite, Bauen.
 
-Schrift, Farben und QR-Codes kommen aus ../gemeinsam (druck.py). Alle Maße in mm.
+Gezeichnet wird auf A4 hoch (210 x 297, alle Maße in mm); gedruckt werden zwei pro A4-Bogen im
+Endformat 137 x 194 mm (A5-Verhältnis), mit Schnittmarken – build() verkleinert. Die Zeichnungen nutzen auch ../motivkarten; der klassische Aushang hat sein eigenes Skript
+(make_klassisch.py).
+Schrift, Farben und QR-Codes kommen aus ../gemeinsam (druck.py).
 """
+import re
 import os
 import sys
 from xml.sax.saxutils import escape
@@ -15,6 +19,23 @@ import make_a4  # noqa: E402
 W, H, M = 210, 297, 16
 TW = W - 2 * M
 INK, GREY = druck.INK, druck.GREY
+# Absender unten: Kontakt zur Community, nur Text (kein zweiter QR-Code). Der Name dunkel, die Adressen
+# in der Akzentfarbe des Blatts – so fallen sie auf wie die Adresse am QR-Code.
+FOOTER_NAME = "OpenStreetMap-Community Fulda"
+FOOTER_LINKS = f"{druck.SHOW_WIKI} · {druck.SHOW_MATRIX}"
+FOOTER = f"{FOOTER_NAME} · {FOOTER_LINKS}"
+FOOTER_SIZE = 5.4            # gedruckt (Maßstab 137/210) gut 3,5 mm
+
+
+def footer(out, x, y, ink, accent, size=FOOTER_SIZE, two_lines=False):
+    """Absenderzeile; y = Grundlinie (bei zwei Zeilen die der unteren). Gibt die Breite zurück."""
+    if two_lines:
+        out.append(text(x, y - size * 1.25, FOOTER_NAME, size, 700, ink))
+        out.append(text(x, y, FOOTER_LINKS, size, 700, accent))
+        return max(druck.text_width(FOOTER_NAME, 700, size), druck.text_width(FOOTER_LINKS, 700, size))
+    out.append(f'<text x="{x:.2f}" y="{y:.2f}" font-size="{size}" font-weight="700" fill="{ink}">'
+               f'{escape(FOOTER_NAME)} · <tspan fill="{accent}">{escape(FOOTER_LINKS)}</tspan></text>')
+    return druck.text_width(FOOTER, 700, size)
 
 
 def text(x, y, s, size, weight=400, fill=INK, anchor="start"):
@@ -49,14 +70,15 @@ def qr_block(out, x, y, size, bg="#fff"):
     return pad
 
 
-def bottom(out, fg, sub, accent, line1, line2, qs=36, s1=6.2, s2=4.8, w1=600, rule_in_text=False, qr_right=False, url_label=None):
-    """QR-Code unten mit Text daneben und Fußzeile. Ruhezone bündig am Rand.
+def bottom(out, fg, sub, accent, line1, line2, qs=36, s1=6.2, s2=4.8, w1=600, qr_right=False, url_label=None):
+    """QR-Code unten mit Text daneben, darunter die Absenderzeile über die ganze Breite. Ruhezone bündig am Rand.
 
+    Die „Einzige Regel“ steht im Text am QR-Code, damit die Absenderzeile Platz für sich hat.
     qr_right=True: Text links an der Satzkante wie der Rest des Blatts, QR-Code rechts unten –
     dort endet die Leserichtung (Z-Muster), also genau da, wo man handeln soll.
     """
     foot = H - M + 3
-    qy = foot - 11 - qs
+    qy = foot - 14 - qs
     module = druck.qr_path(druck.URL_STREETCOMPLETE, 0, 0, qs)[3]
     if qr_right:
         pad = qr_block(out, W - M - qs - 4 * module, qy, qs)
@@ -76,12 +98,9 @@ def bottom(out, fg, sub, accent, line1, line2, qs=36, s1=6.2, s2=4.8, w1=600, ru
         y = paragraph(out, tx, qy + 1, line1, s1, tw, w1, fg, 1.15)
     y = paragraph(out, tx, y + 3.5, line2, s2, tw, 500, sub, 1.3)
     rule = "Einzige Regel: Nur eintragen, was es wirklich gibt."
-    if rule_in_text:        # Regel direkt unter den Text statt klein in die Fußzeile
-        y = paragraph(out, tx, y + 3, rule, s2, tw, 600, fg, 1.3)   # dunkel, damit es sich von der grünen Adresse abhebt
+    y = paragraph(out, tx, y + 3, rule, s2, tw, 600, fg, 1.3)   # dunkel, damit es sich von der Adresse abhebt
     out.append(text(tx, qy + qs, url_label or druck.SHOW_STREETCOMPLETE, 5.2, 700, accent))
-    out.append(text(M, foot, "OpenStreetMap-Community Fulda · osm.wiki/Fulda", 3.6, 500, sub))
-    if not rule_in_text:
-        out.append(text(W - M, foot, rule, 3.6, 500, sub, "end"))
+    assert footer(out, M, foot, fg, accent) <= TW, "Fußzeile zu lang"
     assert y < qy + qs - 6, ("Text am QR-Code zu lang", round(y, 1), round(qy + qs - 6, 1))
     return qy - pad     # Oberkante des weißen QR-Felds
 
@@ -94,13 +113,31 @@ def page(bg, body):
     ])
 
 
+def _prefix_ids(svg, prefix):
+    """IDs eindeutig machen – der Bogen enthält das Blatt zweimal."""
+    ids = set(re.findall(r'\sid="([^"]+)"', svg))
+    for i in ids:
+        svg = svg.replace(f'id="{i}"', f'id="{prefix}{i}"').replace(f"url(#{i})", f"url(#{prefix}{i})")
+    return svg
+
+
+def a5(svg_text, uid):
+    """Das Blatt als verschachteltes SVG in Blattkoordinaten (0..W x 0..H) für make_a4.a5_two_up."""
+    inner = re.sub(r"^<svg [^>]*>", f'<svg x="0" y="0" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
+                   svg_text, count=1)
+    return [_prefix_ids(inner, f"{uid}-")]
+
+
 def build(name, svg_text):
-    """SVG schreiben, Vorschau-PNG und komprimiertes PDF daraus erzeugen."""
+    """SVG (A4-Koordinaten) und Vorschau-PNG schreiben, dazu den Druckbogen <name>-a4.pdf:
+    zwei Blätter im Endformat 137 x 194 mm auf A4 quer, mit Schnittmarken (make_a4.a5_two_up)."""
     os.chdir(HERE)
     with open(f"{name}.svg", "w") as f:
         f.write(svg_text)
     druck.png(f"{name}.svg", f"{name}.png", dpi=110)
-    druck.pdf([f"{name}.svg"], f"{name}-roh.pdf")
-    make_a4.compress(f"{name}-roh.pdf", f"{name}.pdf")
+    with open(f"bogen-{name}.svg", "w") as f:
+        f.write(make_a4.a5_two_up(lambda uid: a5(svg_text, uid), guides=True, view=(W, H)))
+    druck.pdf([f"bogen-{name}.svg"], f"{name}-roh.pdf")
+    make_a4.compress(f"{name}-roh.pdf", f"{name}-a4.pdf")
     os.remove(f"{name}-roh.pdf")
     print(name, "ok")

@@ -1,153 +1,139 @@
 #!/usr/bin/env python3
-"""Mitmachkarte 85x55 mm, doppelseitig – für Leute, die schon Interesse haben.
+"""Mitmachkarte 55x85 mm hochkant, doppelseitig – für Leute, die schon angebissen haben und mehr wollen.
 
-Vorderseite: Titelbild (Banner) mit Rahmen + Quellenhinweis.
-Rückseite:   6 QR-Codes – oben Info & Kontakt, unten Tools.
+Vorderseite: Logo, Begrüßung („Schön, dass du dabei bist.“) – im Stil der Motivkarten.
+Rückseite:   6 QR-Codes in drei Gruppen, geordnet nach dem nächsten Schritt:
+             Loslegen (App, Orte) · Mehr machen (am PC, Fotos) · Mitreden (Chat, Wiki).
 
-Erzeugt mitmachkarte-vorne/-hinten.svg + .png, mitmachkarte.pdf (2 Seiten, mit Beschnitt)
-und den Druckbogen mitmachkarte-a4.pdf (2x5, beidseitig, an langer Kante spiegeln).
+Erzeugt mitmachkarte-vorne/-hinten.svg + .png (hochkant), mitmachkarte.pdf (2 Seiten, mit Beschnitt,
+für Druckereien) und den Druckbogen mitmachkarte-a4.pdf (gewohntes Raster 2x5, Karten darin gedreht,
+beidseitig, an langer Kante spiegeln – siehe druck.card_page_rotated).
 
-ACHTUNG: überschreibt die SVGs. Nach Handarbeit in Inkscape nur noch
-`python3 ../gemeinsam/make_a4.py mitmachkarte-vorne.svg mitmachkarte-hinten.svg -o mitmachkarte-a4.pdf`.
+ACHTUNG: überschreibt die SVGs. Nach Handarbeit in Inkscape an den Hochkant-SVGs müssen die gedrehten
+Bogen-SVGs (bogen-vorne/-hinten.svg) neu erzeugt werden – am einfachsten die Änderung hier im Skript machen.
 """
-import base64
 import os
 import sys
-from io import BytesIO
 from xml.sax.saxutils import escape
-
-from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "gemeinsam"))
 import druck  # noqa: E402
 import make_a4  # noqa: E402
-from druck import H, W, cap_height, logo_svg, qr_path, text_width  # noqa: E402
+from druck import cap_height, logo_svg, qr_path, text_width  # noqa: E402
 
-FRONT_STYLE = "banner"  # "banner" = Titelbild mit Rahmen, "logo" = Logo + Schriftzug (frühere Fassung)
-BANNER_DPI = 450        # Auflösung des eingebetteten Bildes
-BANNER_CROP = 0.05      # unteren Bildrand abschneiden (enthält winzigen Quellenhinweis)
-ATTRIBUTION = "Kartendaten © OpenStreetMap-Mitwirkende"
+W, H = druck.H, druck.W      # hochkant: 55 x 85
+SAFE = 3.5                   # Sicherheitsabstand innen
+INK, GREY, ACCENT = druck.INK, druck.GREY, druck.ACCENT
 
-CODES = [  # (Label, Untertitel, URL)
-    # Reihe 1: Info & Kontakt
-    ("Was ist OpenStreetMap?", druck.SHOW_OSM, druck.URL_OSM),
-    ("Mach mit!", druck.SHOW_WIKI, druck.URL_WIKI),
-    ("Chatte mit uns", druck.SHOW_MATRIX, druck.URL_MATRIX),
-    # Reihe 2: Tools
-    ("Fülle Lücken", druck.SHOW_STREETCOMPLETE, druck.URL_STREETCOMPLETE),
-    ("Finde Orte", druck.SHOW_OSMAPP, druck.URL_OSMAPP),
-    ("Schau dich um", druck.SHOW_PANORAMAX, druck.URL_PANORAMAX),
+FRONT = {
+    "kicker": "OPENSTREETMAP FULDA",
+    "head": ["Schön, dass du", "dabei bist."],
+    "sub": ["Hinten findest du alles,", "was du zum Loslegen brauchst."],
+}
+
+GROUPS = [  # (Überschrift, [(Label, Adresse zum Abtippen, URL), …]) – je zwei Codes nebeneinander
+    ("LOSLEGEN", [("Lücken füllen", druck.SHOW_STREETCOMPLETE, druck.URL_STREETCOMPLETE),
+                  ("Orte finden", druck.SHOW_OSMAPP, druck.URL_OSMAPP)]),
+    ("MEHR MACHEN", [("Am PC bearbeiten", druck.SHOW_OSM_ORG, druck.URL_OSM_ORG),
+                     ("Fotos beitragen", druck.SHOW_PANORAMAX, druck.URL_PANORAMAX)]),
+    ("MITREDEN", [("Chatte mit uns", druck.SHOW_MATRIX, druck.URL_MATRIX),
+                  ("Fulda im Wiki", druck.SHOW_WIKI, druck.URL_WIKI)]),
 ]
 
-SAFE = 3             # Sicherheitsabstand innen
-COLS, ROWS = 3, 2
-QR_SIZE = 16.0
+QR_SIZE = 14.5
+HEAD_SIZE = 2.3              # Gruppenüberschrift, gesperrt
+HEAD_SPACING = 0.6
 LABEL_SIZE = 2.7
-LABEL_GAP = 0.8      # QR -> Label
-ROW_GAP = 5.0        # Label -> nächster QR (Ruhezone + Trenner)
-SEP_LABEL = "TOOLS"  # Trenner vor Reihe 2
-SEP_SIZE = 2.2
-SEP_COLOR = "#777"
-SUB_SIZE = 2.0
-SUB_GAP = 0.4        # Label -> Untertitel
-
-# nur für FRONT_STYLE = "logo"
-LOGO_SIZE = 40.0
-FRONT_LEFT = 6.0
-TITLE_W = 33.0
-SMALL_RATIO = 0.3
-TITLE_GAP = 1.4
+SUB_SIZE = 2.1
+GROUP_GAP = 3.6              # zwischen den Gruppen
 
 
-def front_banner():
-    """Titelbild mit weißem Rand und runden Ecken, lesbarer Quellenhinweis darunter.
-
-    Bild wird verkleinert und als data-URI eingebettet -> SVG ist eigenständig
-    (Inkscape, make_a4.py; librsvg lädt keine Dateien außerhalb des SVG-Ordners).
-    """
-    attr_size = 1.7
-    bh = H - 2 * SAFE - 1.0 - attr_size          # sichtbare Bildhöhe
-    full_h = bh / (1 - BANNER_CROP)
-    bw = full_h * druck.BANNER_RATIO
-    x, y = (W - bw) / 2, SAFE
-    im = Image.open(druck.BANNER).convert("RGB")
-    px = round(bw / 25.4 * BANNER_DPI)
-    im = im.resize((px, round(px / druck.BANNER_RATIO)), Image.LANCZOS)
-    buf = BytesIO()
-    im.save(buf, "JPEG", quality=92, subsampling=0)
-    data = base64.b64encode(buf.getvalue()).decode()
-    return [
-        f'<clipPath id="banner-clip"><rect x="{x:.2f}" y="{y:.2f}" width="{bw:.2f}" height="{bh:.2f}" rx="2"/></clipPath>',
-        f'<image href="data:image/jpeg;base64,{data}" x="{x:.2f}" y="{y:.2f}" width="{bw:.2f}" height="{full_h:.2f}" '
-        f'clip-path="url(#banner-clip)"/>',
-        f'<text x="{W / 2}" y="{H - SAFE:.2f}" font-size="{attr_size}" font-weight="500" fill="{druck.GREY}" '
-        f'text-anchor="middle">{escape(ATTRIBUTION)}</text>',
-    ]
+def text(x, y, s, size, weight=400, fill=INK, anchor="start", spacing=None):
+    sp = f' letter-spacing="{spacing:.3f}"' if spacing else ""
+    return (f'<text x="{x:.2f}" y="{y:.2f}" font-size="{size:.3f}" font-weight="{weight}" fill="{fill}" '
+            f'text-anchor="{anchor}"{sp}>{escape(s)}</text>')
 
 
-def front_logo():
-    big = TITLE_W / text_width("FULDA", 700, 1)
-    small = big * SMALL_RATIO
-    sp = (TITLE_W - text_width("OPENSTREETMAP", 500, small)) / 12
-    cap_b, cap_s = cap_height(700, big), cap_height(500, small)
-    y_small = (H - (cap_s + TITLE_GAP + cap_b)) / 2 + cap_s
-    y_big = y_small + TITLE_GAP + cap_b
-    logo_x = W - SAFE - LOGO_SIZE
-    return [
-        f'<text x="{FRONT_LEFT}" y="{y_small:.2f}" font-size="{small:.3f}" font-weight="500" letter-spacing="{sp:.3f}">OPENSTREETMAP</text>',
-        f'<text x="{FRONT_LEFT}" y="{y_big:.2f}" font-size="{big:.3f}" font-weight="700">FULDA</text>',
-        logo_svg(logo_x, (H - LOGO_SIZE) / 2, LOGO_SIZE),
-    ]
+def fit(lines, weight, max_size, width):
+    return min(max_size, *(max_size * width / text_width(l, weight, max_size) for l in lines))
+
+
+def centered_lines(out, y, lines, size, weight, fill=INK, lead=1.12):
+    """Feste Zeilen mittig; y = Oberkante. Gibt die letzte Grundlinie zurück."""
+    y += cap_height(weight, size)
+    for i, l in enumerate(lines):
+        assert text_width(l, weight, size) <= W - 2 * SAFE + 0.01, ("zu breit", l)
+        out.append(text(W / 2, y + i * size * lead, l, size, weight, fill, "middle"))
+    return y + (len(lines) - 1) * size * lead
+
+
+def front():
+    """Wie die klassische Motivkarte: Logo, Schriftzug, Satz – nur mit Begrüßung statt Aufhänger."""
+    out = []
+    ls = 30
+    y = 8
+    out.append(logo_svg((W - ls) / 2, y, ls))
+    y += ls + 3 + cap_height(500, 2.6)
+    out.append(text(W / 2 + 0.55 / 2, y, FRONT["kicker"], 2.6, 500, GREY, "middle", spacing=0.55))
+    hs = fit(FRONT["head"], 700, 8.0, W - 2 * SAFE)
+    y = centered_lines(out, y + 5, FRONT["head"], hs, 700, lead=1.1)
+    y = centered_lines(out, y + 3.6, FRONT["sub"], 3.4, 500, ACCENT, lead=1.25)
+    assert y < H - SAFE - 2, ("Vorderseite zu voll", round(y, 1))
+    return "#fff", out
+
+
+def group_height():
+    return (cap_height(600, HEAD_SIZE) + 2.2 + QR_SIZE + 1.0 + cap_height(600, LABEL_SIZE)
+            + 0.9 + cap_height(500, SUB_SIZE))
 
 
 def back():
-    cell_w = (W - 2 * SAFE) / COLS
-    label_h = LABEL_GAP + LABEL_SIZE
-    sub_h = SUB_GAP + SUB_SIZE
-    rows = [CODES[r * COLS:(r + 1) * COLS] for r in range(ROWS)]
-    row_hs = [QR_SIZE + label_h + (sub_h if any(c[1] for c in r) else 0) for r in rows]
-    grid_h = sum(row_hs) + ROW_GAP * (ROWS - 1)
-    assert grid_h <= H - 2 * SAFE, "Raster zu hoch"
-    top = (H - grid_h) / 2
+    """Drei Gruppen untereinander, je Überschrift mit Linien links und rechts, darunter zwei Codes."""
     out = []
-    y = top
-    for row, codes in enumerate(rows):
-        for col, (label, sub, url) in enumerate(codes):
-            cx = SAFE + cell_w * (col + 0.5)
-            d, ver, n, s = qr_path(url, cx - QR_SIZE / 2, y, QR_SIZE)
-            print(f"  {label:16} v{ver:<2} {n}x{n} Module, {s:.2f} mm/Modul")
+    gh = group_height()
+    total = len(GROUPS) * gh + (len(GROUPS) - 1) * GROUP_GAP
+    assert total <= H - 2 * SAFE, ("Rückseite zu hoch", round(total, 1))
+    y = (H - total) / 2
+    cell = (W - 2 * SAFE) / 2
+    line = 'stroke="#bbb" stroke-width="0.2"'
+    for head, codes in GROUPS:
+        hy = y + cap_height(600, HEAD_SIZE)
+        out.append(text(W / 2 + HEAD_SPACING / 2, hy, head, HEAD_SIZE, 600, GREY, "middle", spacing=HEAD_SPACING))
+        half = text_width(head, 600, HEAD_SIZE, HEAD_SPACING) / 2 + 1.8
+        ly = hy - cap_height(600, HEAD_SIZE) / 2
+        out.append(f'<line x1="{SAFE + 1}" y1="{ly:.2f}" x2="{W / 2 - half:.2f}" y2="{ly:.2f}" {line}/>')
+        out.append(f'<line x1="{W / 2 + half:.2f}" y1="{ly:.2f}" x2="{W - SAFE - 1}" y2="{ly:.2f}" {line}/>')
+        qy = hy + 2.2
+        for i, (label, show, url) in enumerate(codes):
+            cx = SAFE + cell * (i + 0.5)
+            d, ver, n, module = qr_path(url, cx - QR_SIZE / 2, qy, QR_SIZE)
+            print(f"  {label:17} v{ver:<2} {n}x{n} Module, {module:.2f} mm/Modul")
             out.append(f'<path d="{d}" fill="#000"/>')
-            ly = y + QR_SIZE + LABEL_GAP + LABEL_SIZE * 0.8
-            out.append(f'<text x="{cx:.2f}" y="{ly:.2f}" font-size="{LABEL_SIZE}" font-weight="600" text-anchor="middle">{escape(label)}</text>')
-            if sub:
-                out.append(f'<text x="{cx:.2f}" y="{ly + SUB_GAP + SUB_SIZE * 0.85:.2f}" font-size="{SUB_SIZE}" font-weight="500" '
-                           f'fill="{druck.GREY}" text-anchor="middle">{escape(sub)}</text>')
-        y += row_hs[row] + ROW_GAP
-    # Trennlinie zwischen den Reihen, mittig unterbrochen für das Label
-    sy = top + row_hs[0] + ROW_GAP / 2
-    sep_sp = 0.6
-    half_txt = text_width(SEP_LABEL, 600, SEP_SIZE, sep_sp) / 2 + 1.5
-    x0, x1 = SAFE + 2, W - SAFE - 2
-    line = f'stroke="{SEP_COLOR}" stroke-width="0.2"'
-    out.append(f'<line x1="{x0}" y1="{sy:.2f}" x2="{W / 2 - half_txt:.2f}" y2="{sy:.2f}" {line}/>')
-    out.append(f'<line x1="{W / 2 + half_txt:.2f}" y1="{sy:.2f}" x2="{x1}" y2="{sy:.2f}" {line}/>')
-    out.append(f'<text x="{W / 2}" y="{sy + SEP_SIZE * 0.36:.2f}" font-size="{SEP_SIZE}" fill="{SEP_COLOR}" '
-               f'letter-spacing="{sep_sp}" font-weight="600" text-anchor="middle">{escape(SEP_LABEL)}</text>')
-    return out
+            # Ruhezone 4 Module: zwischen den Codes und zum Rand frei
+            assert cell - QR_SIZE >= 2 * 4 * module - 0.01, "Codes stehen zu eng"
+            lyb = qy + QR_SIZE + 1.0 + cap_height(600, LABEL_SIZE)
+            out.append(text(cx, lyb, label, LABEL_SIZE, 600, INK, "middle"))
+            out.append(text(cx, lyb + 0.9 + cap_height(500, SUB_SIZE), show, SUB_SIZE, 500, GREY, "middle"))
+            for s, wgt, size in [(label, 600, LABEL_SIZE), (show, 500, SUB_SIZE)]:
+                assert text_width(s, wgt, size) <= cell - 0.6, ("Text zu breit", s)
+        y += gh + GROUP_GAP
+    return "#fff", out
 
 
 def main():
     os.chdir(HERE)
     druck.use_project_fonts()
-    front = front_banner() if FRONT_STYLE == "banner" else front_logo()
     print("Rückseite:")
-    for name, body in (("mitmachkarte-vorne", front), ("mitmachkarte-hinten", back())):
-        with open(f"{name}.svg", "w") as f:
-            f.write(druck.card_page(body))
-        druck.png(f"{name}.svg", f"{name}.png")
+    sides = {"vorne": front(), "hinten": back()}
+    for side, (bg, body) in sides.items():
+        with open(f"mitmachkarte-{side}.svg", "w") as f:
+            f.write(druck.card_page_upright(bg, body))
+        with open(f"bogen-{side}.svg", "w") as f:
+            f.write(druck.card_page_rotated(bg, body, side))
+        druck.png(f"mitmachkarte-{side}.svg", f"mitmachkarte-{side}.png")
     druck.pdf(["mitmachkarte-vorne.svg", "mitmachkarte-hinten.svg"], "mitmachkarte.pdf")
-    make_a4.build("mitmachkarte-vorne.svg", "mitmachkarte-hinten.svg", "mitmachkarte-a4.pdf")
+    make_a4.build("bogen-vorne.svg", "bogen-hinten.svg", "mitmachkarte-a4.pdf")
 
 
 if __name__ == "__main__":

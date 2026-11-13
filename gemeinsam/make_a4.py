@@ -128,6 +128,53 @@ def sheet(card_path, ident, guides=False):
     return ET.tostring(svg, encoding="unicode")
 
 
+# --- Aushänge: zwei nebeneinander auf A4 quer -----------------------------------
+#
+# Wie bei den Karten: Die beiden Blätter liegen ohne Abstand aneinander, mittig auf dem Bogen, jedes
+# genau auf sein Endformat beschnitten. Der Rand zum Papier wird abgeschnitten (dort sitzen die
+# Schnittmarken), darum stört der nicht bedruckbare Druckerrand nicht und beide Hälften sind gleich
+# groß. Endformat: so groß, wie es mit Platz für die Marken geht, im Seitenverhältnis von A5.
+
+POSTER_W, POSTER_H = 137, 194     # Endformat in mm (A5-Verhältnis, 1:1,416)
+SHEET_W, SHEET_H = 297, 210       # A4 quer
+
+
+def a5_two_up(make, guides=False, view=(148, 210)):
+    """A4 quer, zwei Aushänge nebeneinander, Schnittmarken außen, ein Schnitt pro Kante (5 je Bogen).
+
+    make(uid) liefert den Inhalt eines Blatts in eigenen Koordinaten 0..view; er wird auf das Endformat
+    skaliert (bei minimal anderem Seitenverhältnis an den Rändern um Bruchteile eines mm beschnitten).
+    guides=True: durchgehende hellgraue Haarlinien (nur Vorderseite, wegen Duplex-Versatz).
+    """
+    gw, gh = 2 * POSTER_W, POSTER_H
+    x0, y0 = (SHEET_W - gw) / 2, (SHEET_H - gh) / 2
+    assert min(x0, y0) >= MARK_GAP + MARK_LEN, "zu wenig Rand für Schnittmarken"
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{SHEET_W}mm" height="{SHEET_H}mm" '
+           f'viewBox="0 0 {SHEET_W} {SHEET_H}">',
+           f'<rect width="{SHEET_W}" height="{SHEET_H}" fill="#fff"/>']
+    for i in range(2):
+        out.append(f'<svg x="{x0 + i * POSTER_W:.3f}" y="{y0:.3f}" width="{POSTER_W}" height="{POSTER_H}" '
+                   f'viewBox="0 0 {view[0]} {view[1]}" preserveAspectRatio="xMidYMid slice" overflow="hidden">')
+        out.append('<g font-family="Barlow Condensed">')
+        out.extend(make(f"p{i}"))
+        out.append("</g></svg>")
+    mark = f'stroke="#000" stroke-width="{MARK_WIDTH}"'
+    for x in (x0, x0 + POSTER_W, x0 + gw):
+        out.append(f'<line x1="{x:.3f}" y1="{y0 - MARK_GAP - MARK_LEN:.3f}" x2="{x:.3f}" y2="{y0 - MARK_GAP:.3f}" {mark}/>')
+        out.append(f'<line x1="{x:.3f}" y1="{y0 + gh + MARK_GAP:.3f}" x2="{x:.3f}" y2="{y0 + gh + MARK_GAP + MARK_LEN:.3f}" {mark}/>')
+    for y in (y0, y0 + gh):
+        out.append(f'<line x1="{x0 - MARK_GAP - MARK_LEN:.3f}" y1="{y:.3f}" x2="{x0 - MARK_GAP:.3f}" y2="{y:.3f}" {mark}/>')
+        out.append(f'<line x1="{x0 + gw + MARK_GAP:.3f}" y1="{y:.3f}" x2="{x0 + gw + MARK_GAP + MARK_LEN:.3f}" y2="{y:.3f}" {mark}/>')
+    if guides:
+        g = f'stroke="{GUIDE_COLOR}" stroke-width="{GUIDE_WIDTH}"'
+        for x in (x0, x0 + POSTER_W, x0 + gw):
+            out.append(f'<line x1="{x:.3f}" y1="0" x2="{x:.3f}" y2="{SHEET_H}" {g}/>')
+        for y in (y0, y0 + gh):
+            out.append(f'<line x1="0" y1="{y:.3f}" x2="{SHEET_W}" y2="{y:.3f}" {g}/>')
+    out.append("</svg>")
+    return "\n".join(out)
+
+
 use_project_fonts = druck.use_project_fonts
 
 
