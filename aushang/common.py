@@ -60,9 +60,9 @@ def fit(lines, weight, max_size, width=TW):
     return min(max_size, *(max_size * width / druck.text_width(l, weight, max_size) for l in lines))
 
 
-def qr_block(out, x, y, size, bg="#fff"):
+def qr_block(out, x, y, size, url, bg="#fff"):
     """QR-Code mit weißer Ruhezone von 4 Modulen (ISO/IEC 18004). Gibt die Ruhezone in mm zurück."""
-    d, _, _, module = druck.qr_path(druck.URL_STREETCOMPLETE, x, y, size)
+    d, _, _, module = druck.qr_path(url, x, y, size)
     pad = 4 * module
     out.append(f'<rect x="{x - pad:.2f}" y="{y - pad:.2f}" width="{size + 2 * pad:.2f}" '
                f'height="{size + 2 * pad:.2f}" rx="2" fill="{bg}"/>')
@@ -70,7 +70,7 @@ def qr_block(out, x, y, size, bg="#fff"):
     return pad
 
 
-def bottom(out, fg, sub, accent, line1, line2, qs=36, s1=6.2, s2=4.8, w1=600, qr_right=False, url_label=None):
+def bottom(out, fg, sub, accent, line1, line2, *, url, qs=36, s1=6.2, s2=4.8, w1=600, qr_right=False, url_label=None):
     """QR-Code unten mit Text daneben, darunter die Absenderzeile über die ganze Breite. Ruhezone bündig am Rand.
 
     Die „Einzige Regel“ steht im Text am QR-Code, damit die Absenderzeile Platz für sich hat.
@@ -79,13 +79,13 @@ def bottom(out, fg, sub, accent, line1, line2, qs=36, s1=6.2, s2=4.8, w1=600, qr
     """
     foot = H - M + 3
     qy = foot - 14 - qs
-    module = druck.qr_path(druck.URL_STREETCOMPLETE, 0, 0, qs)[3]
+    module = druck.qr_path(url, 0, 0, qs)[3]
     if qr_right:
-        pad = qr_block(out, W - M - qs - 4 * module, qy, qs)
+        pad = qr_block(out, W - M - qs - 4 * module, qy, qs, url)
         tx = M
         tw = W - M - qs - 2 * pad - 8 - M
     else:
-        pad = qr_block(out, M + 4 * module, qy, qs)
+        pad = qr_block(out, M + 4 * module, qy, qs, url)
         tx = M + qs + 2 * pad + 8
         tw = W - M - tx
     if isinstance(line1, list):     # feste Zeilen nach Sinn statt automatischem Umbruch

@@ -148,11 +148,11 @@ def qr_cta(out, y_bottom):
     darum steht der Code bündig an der Satzkante. Gibt die Oberkante der Ruhezone zurück.
     """
     qs = 36
-    module = druck.qr_path(druck.URL_STREETCOMPLETE, 0, 0, qs)[3]
+    module = druck.qr_path(druck.go("a/klassisch"), 0, 0, qs)[3]
     pad = 4 * module
     assert M >= pad, "Seitenrand kleiner als die Ruhezone"
     qx, qy = M, y_bottom - qs
-    qr(out, druck.URL_STREETCOMPLETE, qx, qy, qs)
+    qr(out, druck.go("a/klassisch"), qx, qy, qs)
     tx = qx + qs + pad + 2
     tw = W - M - tx
     s1, s2 = 7.0, 4.3

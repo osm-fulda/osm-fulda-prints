@@ -40,7 +40,7 @@ def poster():
     bottom(out, INK, "#6b5a12", INK,
            "Bestimm mit, was über deine Stadt drinsteht. Scan und leg los.",
            "Die App StreetComplete stellt dir kurze Fragen. Jede Antwort ist sofort für alle sichtbar.",
-           qs=44, s1=8.6, s2=5.2, w1=700)
+           url=druck.go("a/gelb"), qs=44, s1=8.6, s2=5.2, w1=700)
     return page(YELLOW, out)
 
 

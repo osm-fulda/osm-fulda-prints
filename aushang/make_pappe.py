@@ -182,10 +182,10 @@ def crowd(out):
         out.append("</g>")
 
 
-def qr_note(out, x, y, size, rot):
+def qr_note(out, x, y, size, rot, url):
     """QR-Code auf einem weißen Zettel, mit Klebeband an die Latte geklebt."""
     rnd = random.Random(11)
-    d_qr, _, _, module = druck.qr_path(druck.URL_STREETCOMPLETE, 0, 0, size)
+    d_qr, _, _, module = druck.qr_path(url, 0, 0, size)
     pad = max(8, 4 * module + 2)            # Ruhezone ≥ 4 Module
     w, h = size + 2 * pad, size + 2 * pad + 8
     cx, cy = x + w / 2, y + h / 2
@@ -213,7 +213,7 @@ def poster():
     qs = 40
     nx = stick_x + 14
     ny = end - 12                                  # oben auf das Schild geklebt, hängt nach unten
-    nw, nh = qr_note(out, nx, ny, qs, 3)
+    nw, nh = qr_note(out, nx, ny, qs, 3, druck.go("a/pappe"))
     lx, ly, lw_, lh = stick_x + 6, ny + nh + 16, 52, 13     # weiter rechts unten, linkes Ende auf dem Pfosten
     out.append(f'<g transform="rotate(-4 {lx + lw_ / 2:.1f} {ly + lh / 2:.1f})">')
     out.append(f'<path d="{jagged_rect(random.Random(5), lx, ly, lw_, lh, 0.5)}" fill="#000" opacity="0.15" transform="translate(1 1.5)"/>')

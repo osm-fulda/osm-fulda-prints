@@ -25,13 +25,14 @@ ACCENT = "#3f7d32"     # Grün passend zur Karte im Titelbild
 W, H = 85, 55          # Kartenformat
 BLEED = 3              # Beschnitt rundum
 
-URL_WIKI = "https://wiki.openstreetmap.org/wiki/Fulda"
-# Weiterleitung auf https://matrix.to/#/#osm-fulda-space:shivering-isles.com (eigene Domain, Ziel änderbar)
-URL_MATRIX = "https://chat.osm-fulda.de/"
-URL_STREETCOMPLETE = "https://streetcomplete.app/"
-URL_OSMAPP = "https://osmapp.org/de"
-URL_PANORAMAX = "https://panorama.osm-fulda.de/"
-URL_OSM_ORG = "https://www.openstreetmap.org/"    # am Rechner bearbeiten (Editor iD im Browser)
+# Die QR-Codes zeigen nicht direkt aufs Ziel, sondern auf go.osm-fulda.de/<pfad>, je Drucksache ein
+# eigener Pfad. So lässt sich ein Ziel ändern, ohne neu zu drucken, und Scans lassen sich je Drucksache
+# zählen. Pfade und Ziele stehen im gitops-Repo (apps/redirects/go.yaml): Ein neuer Pfad muss dort
+# zuerst eingetragen sein. Gedruckte Pfade nie ändern.
+#   a/<motiv>  Aushänge      k/<motiv>  Motivkarten      m/<name>  Mitmachkarte      drucken  Aufsteller
+def go(path):
+    return f"https://go.osm-fulda.de/{path}"
+
 
 # Zum Abtippen unter den QR-Codes (manche scannen fremde QR-Codes lieber nicht)
 SHOW_WIKI = "osm.wiki/Fulda"      # Weiterleitung aufs Fulda-Wiki

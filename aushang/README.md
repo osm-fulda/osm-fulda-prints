@@ -19,7 +19,8 @@ Karten zum Liegenlassen: [`../motivkarten/`](../motivkarten/).
 
 ## Inhaltliche Regeln
 
-- **Ein QR-Code, und zwar zu StreetComplete** (`https://streetcomplete.app/`, Android und iPhone).
+- **Ein QR-Code, und zwar zu StreetComplete** (`https://streetcomplete.app/`, Android und iPhone),
+  über die Weiterleitung `go.osm-fulda.de/a/<motiv>` (siehe Haupt-README, „QR-Codes“).
   Gescannt wird, wenn man etwas entdecken kann, nicht wenn es nach Arbeit klingt. StreetComplete
   zeigt die Lücken auf der Karte und lässt sich ohne Konto ausprobieren.
 - **Die Community steht als Text in der Fußzeile** (Wiki und Chat), groß genug zum Abtippen, aber
