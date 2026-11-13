@@ -1,7 +1,6 @@
 __pycache__/
 gemeinsam/fonts/fonts.conf
 # Zwischendateien – werden von den make_*.py neu erzeugt
-aushang/bogen-*.svg
 /*/*.svg
 
 # Namen echter Mapper fürs Shirt – nicht veröffentlichen
