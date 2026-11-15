@@ -213,7 +213,7 @@ def poster():
     qs = 40
     nx = stick_x + 14
     ny = end - 12                                  # oben auf das Schild geklebt, hängt nach unten
-    nw, nh = qr_note(out, nx, ny, qs, 3, druck.go("a/pappe"))
+    nw, nh = qr_note(out, nx, ny, qs, 3, druck.go("loslegen"))
     lx, ly, lw_, lh = stick_x + 6, ny + nh + 16, 52, 13     # weiter rechts unten, linkes Ende auf dem Pfosten
     out.append(f'<g transform="rotate(-4 {lx + lw_ / 2:.1f} {ly + lh / 2:.1f})">')
     out.append(f'<path d="{jagged_rect(random.Random(5), lx, ly, lw_, lh, 0.5)}" fill="#000" opacity="0.15" transform="translate(1 1.5)"/>')

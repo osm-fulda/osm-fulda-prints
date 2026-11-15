@@ -318,18 +318,16 @@ def overview(out="vorschau.png", h=700, gap=20, head=44):
 def main():
     os.chdir(HERE)
     druck.use_project_fonts()
+    bg, body = back(druck.go("loslegen"))
+    write("motivkarte-hinten.svg", portrait(bg, body))
+    write("bogen-hinten.svg", landscape(bg, body, "hinten"))
+    druck.png("motivkarte-hinten.svg", "motivkarte-hinten.png", dpi=400)
     for key, make in FRONTS.items():
-        # Rückseite sieht überall gleich aus, nur der QR-Code ist je Motiv ein anderer Pfad
-        bg, body = back(druck.go(f"k/{key}"))
-        write(f"bogen-hinten-{key}.svg", landscape(bg, body, "hinten"))
-        if key == "klassisch":      # Vorschau der Rückseite
-            write("motivkarte-hinten.svg", portrait(bg, body))
-            druck.png("motivkarte-hinten.svg", "motivkarte-hinten.png", dpi=400)
         bg, body = make()
         write(f"motivkarte-{key}.svg", portrait(bg, body))
         write(f"bogen-{key}.svg", landscape(bg, body, "vorne"))
         druck.png(f"motivkarte-{key}.svg", f"motivkarte-{key}.png", dpi=400)
-        make_a4.build(f"bogen-{key}.svg", f"bogen-hinten-{key}.svg", f"motivkarte-{key}-a4.pdf")
+        make_a4.build(f"bogen-{key}.svg", "bogen-hinten.svg", f"motivkarte-{key}-a4.pdf")
     overview()
 
 

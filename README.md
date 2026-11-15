@@ -85,9 +85,9 @@ Die Schriften werden aus `gemeinsam/fonts/` geladen, installieren ist nicht nöt
 
 Texte, Labels und Adressen stehen jeweils oben im Skript, gemeinsame in `gemeinsam/druck.py`.
 
-**QR-Codes** zeigen nie direkt aufs Ziel, sondern auf `go.osm-fulda.de/<pfad>`, je Drucksache ein
-eigener Pfad (`a/<motiv>` Aushänge, `k/<motiv>` Motivkarten, `m/<name>` Mitmachkarte, `drucken`
-Aufsteller). So lässt sich ein Ziel ändern, ohne neu zu drucken, und man sieht, was gescannt wird.
+**QR-Codes** zeigen nie direkt aufs Ziel, sondern auf `go.osm-fulda.de/<zweck>`, ein Pfad je Zweck
+(`loslegen`, `finden`, `bearbeiten`, `fotos`, `chat`, `wiki`, `drucken`). So lässt sich ein Ziel
+ändern, ohne neu zu drucken.
 Die Ziele stehen im gitops-Repo (`apps/redirects/go.yaml`); ein neuer Pfad muss dort zuerst
 eingetragen sein. Gedruckte Pfade nie ändern.
 Jedes Skript prüft, dass sich nichts überlagert und alles in die Fläche passt, und bricht sonst ab.
