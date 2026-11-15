@@ -25,11 +25,11 @@ ACCENT = "#3f7d32"     # Grün passend zur Karte im Titelbild
 W, H = 85, 55          # Kartenformat
 BLEED = 3              # Beschnitt rundum
 
-# Die QR-Codes zeigen nicht direkt aufs Ziel, sondern auf go.osm-fulda.de/<pfad>, je Drucksache ein
-# eigener Pfad. So lässt sich ein Ziel ändern, ohne neu zu drucken, und Scans lassen sich je Drucksache
-# zählen. Pfade und Ziele stehen im gitops-Repo (apps/redirects/go.yaml): Ein neuer Pfad muss dort
-# zuerst eingetragen sein. Gedruckte Pfade nie ändern.
-#   a/<motiv>  Aushänge      k/<motiv>  Motivkarten      m/<name>  Mitmachkarte      drucken  Aufsteller
+# Die QR-Codes zeigen nicht direkt aufs Ziel, sondern auf go.osm-fulda.de/<zweck>, ein Pfad je Zweck
+# (nicht je Dienst und nicht je Drucksache). So lässt sich ein Ziel ändern, ohne neu zu drucken.
+# Pfade und Ziele stehen im gitops-Repo (apps/redirects/go.yaml): Ein neuer Pfad muss dort zuerst
+# eingetragen sein. Gedruckte Pfade nie ändern.
+#   loslegen  finden  bearbeiten  fotos  chat  wiki  drucken
 def go(path):
     return f"https://go.osm-fulda.de/{path}"
 

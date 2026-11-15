@@ -34,12 +34,12 @@ FRONT = {
 }
 
 GROUPS = [  # (Überschrift, [(Label, Adresse zum Abtippen, URL), …]) – je zwei Codes nebeneinander
-    ("LOSLEGEN", [("Lücken füllen", druck.SHOW_STREETCOMPLETE, druck.go("m/streetcomplete")),
-                  ("Orte finden", druck.SHOW_OSMAPP, druck.go("m/osmapp"))]),
-    ("MEHR MACHEN", [("Am PC bearbeiten", druck.SHOW_OSM_ORG, druck.go("m/osm")),
-                     ("Fotos beitragen", druck.SHOW_PANORAMAX, druck.go("m/panoramax"))]),
-    ("MITREDEN", [("Chatte mit uns", druck.SHOW_MATRIX, druck.go("m/chat")),
-                  ("Fulda im Wiki", druck.SHOW_WIKI, druck.go("m/wiki"))]),
+    ("LOSLEGEN", [("Lücken füllen", druck.SHOW_STREETCOMPLETE, druck.go("loslegen")),
+                  ("Orte finden", druck.SHOW_OSMAPP, druck.go("finden"))]),
+    ("MEHR MACHEN", [("Am PC bearbeiten", druck.SHOW_OSM_ORG, druck.go("bearbeiten")),
+                     ("Fotos beitragen", druck.SHOW_PANORAMAX, druck.go("fotos"))]),
+    ("MITREDEN", [("Chatte mit uns", druck.SHOW_MATRIX, druck.go("chat")),
+                  ("Fulda im Wiki", druck.SHOW_WIKI, druck.go("wiki"))]),
 ]
 
 QR_SIZE = 14.5
