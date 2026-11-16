@@ -52,12 +52,12 @@ Druckbogen: [`mitmachkarte-a4.pdf`](mitmachkarte/mitmachkarte-a4.pdf) (10 Karten
 
 ## Aufsteller
 
-| <img src="aufsteller/aufsteller-aushang.png" width="130" alt="Aufsteller Aushänge"> | <img src="aufsteller/aufsteller-motivkarten.png" width="130" alt="Aufsteller Motivkarten"> | <img src="aufsteller/aufsteller-mitmachkarte.png" width="130" alt="Aufsteller Mitmachkarte"> |
-|:---:|:---:|:---:|
-| „Häng mich auf!“ – alle fünf Aushänge, je mit Zielgruppe | „Leg mich aus!“ – alle fünf Motivkarten, je mit Zielgruppe | „Wir haben dich angefixt?“ – Mitmachkarte, für alle, die schon mitmachen wollen |
+| <img src="aufsteller/aufsteller-aushang.png" width="130" alt="Aufsteller Aushänge"> | <img src="aufsteller/aufsteller-motivkarten.png" width="130" alt="Aufsteller Motivkarten"> | <img src="aufsteller/aufsteller-mitmachkarte.png" width="130" alt="Aufsteller Mitmachkarte"> | <img src="aufsteller/aufsteller-shop.png" width="130" alt="Aufsteller Shop"> |
+|:---:|:---:|:---:|:---:|
+| „Häng mich auf!“ – alle fünf Aushänge, je mit Zielgruppe | „Leg mich aus!“ – alle fünf Motivkarten, je mit Zielgruppe | „Wir haben dich angefixt?“ – Mitmachkarte, für alle, die schon mitmachen wollen | „Sei unsere Werbetafel!“ – Shirts, Hoodie und Tasse, QR-Code zum Shop |
 
 Tischaufsteller A4, zum Dreieck gefaltet, von beiden Seiten lesbar, mit QR-Code zu diesem Repo
-(„Vergriffen?“). Alle drei in [`aufsteller-a4.pdf`](aufsteller/aufsteller-a4.pdf) (3 Seiten).
+(„Vergriffen?“), beim Shop-Aufsteller zum Shop (`go.osm-fulda.de/shop`). Alle vier in [`aufsteller-a4.pdf`](aufsteller/aufsteller-a4.pdf) (4 Seiten).
 
 ## Merch
 
@@ -108,7 +108,7 @@ selbst dort. Für Inkscape vorher `gemeinsam/fonts/*.ttf` nach `~/.local/share/f
   beide Seiten, Duplex **an kurzer Kante**; vorher einen Bogen testen.
 - Dicker Karton (> ~105 g/m²) wird vom Drucker oft nicht automatisch gewendet → manuell:
   erst Seite 1, Stapel wenden, dann Seite 2.
-- **Aufsteller** (A4 hoch, einseitig, 3 Seiten): an den gestrichelten Linien falten, unteren Streifen
+- **Aufsteller** (A4 hoch, einseitig, 4 Seiten): an den gestrichelten Linien falten, unteren Streifen
   als Standfläche nach innen unter die Rückseite schieben. Mind. 160 g/m², sonst kippt er.
 - Fürs Fenster mind. 160–200 g/m², sonst scheint die Rückseite durch.
 

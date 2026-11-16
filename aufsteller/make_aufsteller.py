@@ -43,12 +43,19 @@ CARD_UPRIGHT = ((55, 85), druck.BLEED)   # Karten hochkant, Beschnitt im PNG
 A5 = ((148, 210), 0)
 A4 = ((210, 297), 0)                     # Aushänge, die auf A4 gezeichnet und als A5 gedruckt werden
 
+
+def photo(path):
+    """Freigestelltes Foto (transparenter Grund): Format aus den Pixeln, ohne Papierkante."""
+    with Image.open(os.path.join(ROOT, path)) as im:
+        return path, (im.size, 0, False)
+
 # Ein Aufsteller pro Oberkategorie, je vor seinen Stapel am Stand.
 # "single": Vorschaubilder (PNG, Format, Bildunterschrift oder None) links, Text rechts;
 #           Titel als Text oder Liste fester Zeilen; Text als Absätze (Zwischenzeile halbfett
 #           oder None, Fließtext oder Liste fester Zeilen).
 # "series": Aufforderung und Satz oben, darunter alle Motive der Reihe nebeneinander,
 #           je mit Namen und Zielgruppe – so sucht sich jeder das Motiv aus, das zu seinem Ort passt.
+# Optional am Ende: Kopfzeile und Fuß (Zeilen, QR-Ziel) statt KICKER / FOOTER.
 STANDS = [
     ("mitmachkarte", "single", ["Wir haben dich angefixt?", "", "Jetzt kommst du da", "nicht wieder raus."],
      [("mitmachkarte/mitmachkarte-vorne.png", CARD_UPRIGHT, None),
@@ -71,6 +78,16 @@ STANDS = [
       ("motivkarten/motivkarte-sozial.png", CARD_UPRIGHT, ("Sozial", "Barrierefreiheit"))],
      "Ins Wartezimmer, ins Café, in den Jugendtreff – überall, wo Leute warten. "
      "Such dir ein Motiv aus und nimm gleich ein paar mit."),
+    ("shop", "series", "Sei unsere Werbetafel!",
+     [(*photo("shirt/fotos/mapper.webp"), ("Mapper", "Shirt")),
+      (*photo("shirt/fotos/hoodie-stadtplan.webp"), ("Stadtplan", "Hoodie")),
+      (*photo("shirt/fotos/shirt-tailliert.webp"), ("Logo klein", "Shirt tailliert")),
+      (*photo("shirt/fotos/tasse.webp"), ("Logo groß", "Tasse"))],
+     "Du willst das Projekt bekannter machen? Dann zeig es – unterwegs und im Büro.",
+     {"kicker": "OPENSTREETMAP FULDA · SHOP",
+      # Text zeigt das echte Ziel (zum Abtippen), der Code geht über go, damit der Shop wechseln kann
+      "footer": (["Shirts, Hoodies und Tassen bestellen:", "3dsupply.de/de/designer/openstreetmap-fulda"],
+                 druck.go("shop"))}),
 ]
 
 KICKER = "OPENSTREETMAP FULDA · KOSTENLOS"
@@ -94,9 +111,14 @@ def text(x, y, s, size, weight, fill=INK, anchor="start", spacing=None):
             f'fill="{fill}" text-anchor="{anchor}"{sp}>{escape(s)}</text>')
 
 
-def preview(path, size, bleed, x, y, w):
-    """Vorschau ohne Beschnitt als JPEG einbetten, mit Haarlinie als Papierkante."""
-    im = Image.open(os.path.join(ROOT, path)).convert("RGB")
+def preview(path, fmt, x, y, w):
+    """Vorschau ohne Beschnitt als JPEG einbetten, mit Haarlinie als Papierkante (außer bei Fotos)."""
+    size, bleed, *rest = fmt
+    edge = rest[0] if rest else True
+    im = Image.open(os.path.join(ROOT, path)).convert("RGBA")
+    flat = Image.new("RGB", im.size, "#fff")      # transparenter Grund wird weiß wie das Papier
+    flat.paste(im, mask=im.getchannel("A"))
+    im = flat
     if bleed:
         b = round(bleed * im.width / (size[0] + 2 * bleed))
         im = im.crop((b, b, im.width - b, im.height - b))
@@ -106,33 +128,35 @@ def preview(path, size, bleed, x, y, w):
     buf = BytesIO()
     im.save(buf, "JPEG", quality=90)
     href = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
-    return [f'<image x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" href="{href}"/>',
-            f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" fill="none" '
-            f'stroke="#bbb" stroke-width="0.2"/>']
+    out = [f'<image x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" href="{href}"/>']
+    if edge:
+        out.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" fill="none" '
+                   f'stroke="#bbb" stroke-width="0.2"/>')
+    return out
 
 
-def footer():
-    """QR-Code + zwei Zeilen zum Repo, als Gruppe mittig knapp über dem unteren Falz."""
-    tw = max(text_width(l, w, FOOTER_SIZE) for l, w in zip(FOOTER, (400, 600)))
+def footer(lines=FOOTER, url=FOOTER_URL):
+    """QR-Code + zwei Zeilen (Standard: zum Repo), als Gruppe mittig knapp über dem unteren Falz."""
+    tw = max(text_width(l, w, FOOTER_SIZE) for l, w in zip(lines, (400, 600)))
     gap = 3
     x = (AW - FOOTER_QR - gap - tw) / 2
     qy = FACE - PAD + 2 - FOOTER_QR
-    d, ver, n, s = qr_path(FOOTER_URL, x, qy, FOOTER_QR)
+    d, ver, n, s = qr_path(url, x, qy, FOOTER_QR)
     tx = x + FOOTER_QR + gap
     lead = FOOTER_SIZE * 1.35
     y1 = qy + FOOTER_QR / 2 - lead / 2 + cap_height(400, FOOTER_SIZE) / 2
     return qy, s, [f'<path d="{d}" fill="#000"/>',
-                   text(tx, y1, FOOTER[0], FOOTER_SIZE, 400, GREY),
-                   text(tx, y1 + lead, FOOTER[1], FOOTER_SIZE, 600, INK)]
+                   text(tx, y1, lines[0], FOOTER_SIZE, 400, GREY),
+                   text(tx, y1 + lead, lines[1], FOOTER_SIZE, 600, INK)]
 
 
-def face(images, head, body):
+def face(images, head, body, kicker=KICKER, foot=(FOOTER, FOOTER_URL)):
     """Eine Schauseite, Koordinaten 0..AW x 0..FACE, Oberkante = Falz an der Spitze."""
     out = []
     ky = PAD + cap_height(500, KICKER_SIZE)
-    out.append(text(AW / 2, ky, KICKER, KICKER_SIZE, 500, GREY, anchor="middle", spacing=0.5))
-    fy, module, foot = footer()
-    out.extend(foot)
+    out.append(text(AW / 2, ky, kicker, KICKER_SIZE, 500, GREY, anchor="middle", spacing=0.5))
+    fy, module, f = footer(*foot)
+    out.extend(f)
     top, bottom = ky + 6, fy - 6                    # Inhaltsbereich
 
     # Vorschau links, so groß wie Breite/Höhe erlauben
@@ -151,8 +175,8 @@ def face(images, head, body):
         pw = iw
         y0 = top + (avail_h - n * ih - PREVIEW_GAP * (n - 1)) / 2
         boxes = [(M, y0 + i * (ih + PREVIEW_GAP)) for i in range(n)]
-    for (path, (size, bleed), caption), (x, y) in zip(images, boxes):
-        out.extend(preview(path, size, bleed, x, y, iw))
+    for (path, fmt, caption), (x, y) in zip(images, boxes):
+        out.extend(preview(path, fmt, x, y, iw))
         if caption:
             out.append(text(x + iw / 2, y + ih + cap_h, caption, CAPTION, 500, GREY, anchor="middle"))
 
@@ -193,13 +217,13 @@ SERIES_GAP = 4.5                 # zwischen den Vorschaubildern
 NAME_SIZE, ROLE_SIZE = 3.8, 3.2  # Bildunterschrift: Motiv und Zielgruppe
 
 
-def face_series(items, head, intro):
+def face_series(items, head, intro, kicker=KICKER, foot=(FOOTER, FOOTER_URL)):
     """Schauseite für eine Reihe: Aufforderung links, Satz rechts daneben, darunter alle Motive."""
     out = []
     ky = PAD + cap_height(500, KICKER_SIZE)
-    out.append(text(AW / 2, ky, KICKER, KICKER_SIZE, 500, GREY, anchor="middle", spacing=0.5))
-    fy, module, foot = footer()
-    out.extend(foot)
+    out.append(text(AW / 2, ky, kicker, KICKER_SIZE, 500, GREY, anchor="middle", spacing=0.5))
+    fy, module, f = footer(*foot)
+    out.extend(f)
     top, bottom = ky + 6, fy - 5
 
     # Kopfzeile: Aufforderung + Satz, gemeinsam vertikal mittig
@@ -219,16 +243,16 @@ def face_series(items, head, intro):
     cap_h = 2.2 + cap_height(600, NAME_SIZE) + 1.6 + cap_height(500, ROLE_SIZE)
     y0 = top + row_h + 6
     avail_h = bottom - y0 - cap_h
-    ratios = [size[1] / size[0] for _, (size, _), _ in items]
+    ratios = [fmt[0][1] / fmt[0][0] for _, fmt, _ in items]
     iw = min((AW - 2 * M - SERIES_GAP * (n - 1)) / n, avail_h / max(ratios))
     assert iw > 25, f"{head}: Vorschaubilder zu klein ({iw:.1f} mm)"
     x0 = (AW - n * iw - SERIES_GAP * (n - 1)) / 2
     ih_max = iw * max(ratios)
     base = y0 + (avail_h - ih_max) / 2 + ih_max      # Reihe mittig im freien Raum; Bilder unten bündig
-    for i, (path, (size, bleed), (name, role)) in enumerate(items):
+    for i, (path, fmt, (name, role)) in enumerate(items):
         x = x0 + i * (iw + SERIES_GAP)
-        ih = iw * size[1] / size[0]
-        out.extend(preview(path, size, bleed, x, base - ih, iw))
+        ih = iw * fmt[0][1] / fmt[0][0]
+        out.extend(preview(path, fmt, x, base - ih, iw))
         ny = base + 2.2 + cap_height(600, NAME_SIZE)
         out.append(text(x + iw / 2, ny, name, NAME_SIZE, 600, INK, anchor="middle"))
         out.append(text(x + iw / 2, ny + 1.6 + cap_height(500, ROLE_SIZE), role, ROLE_SIZE, 500, GREY,
@@ -236,8 +260,10 @@ def face_series(items, head, intro):
     return out, module
 
 
-def sheet(kind, head, images, body):
-    f, module = (face if kind == "single" else face_series)(images, head, body)
+def sheet(kind, head, images, body, opts=None):
+    opts = opts or {}
+    f, module = (face if kind == "single" else face_series)(
+        images, head, body, kicker=opts.get("kicker", KICKER), foot=opts.get("footer", (FOOTER, FOOTER_URL)))
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{AW}mm" height="{AH}mm" viewBox="0 0 {AW} {AH}">',
            f'<rect width="{AW}" height="{AH}" fill="#fff"/>',
            f'<g font-family="{druck.FONT}">',
@@ -258,14 +284,14 @@ def main():
     os.chdir(HERE)
     druck.use_project_fonts()
     svgs = []
-    for name, kind, head, images, body in STANDS:
-        svg, module = sheet(kind, head, images, body)
+    for name, kind, head, images, body, *opts in STANDS:
+        svg, module = sheet(kind, head, images, body, *opts)
         fn = f"aufsteller-{name}.svg"
         with open(fn, "w") as f:
             f.write(svg)
         druck.png(fn, f"aufsteller-{name}.png", dpi=100)
         svgs.append(fn)
-        print(f"  {name:13} {' '.join(head) if isinstance(head, list) else head:28} Repo-QR {module:.2f} mm/Modul")
+        print(f"  {name:13} {' '.join(head) if isinstance(head, list) else head:28} QR {module:.2f} mm/Modul")
     with tempfile.TemporaryDirectory() as tmp:
         raw = os.path.join(tmp, "roh.pdf")
         druck.pdf(svgs, raw)

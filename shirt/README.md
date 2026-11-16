@@ -14,6 +14,8 @@ Quellen und Skripte liegen in `quelle/`.
 | `tags-mapper-hell.png` | der Mensch im Shirt als Mapper-„Objekt“ im Stil des iD-Editors, mit `name=FIXME` |
 | `tags-mapper-dunkel.png` | dasselbe für dunkle Shirts: helle Schrift und Rahmen |
 
+`fotos/`: freigestellte Produktfotos aus dem Shop, für den [Shop-Aufsteller](../aufsteller/).
+
 ## Bauen
 
 ```sh
