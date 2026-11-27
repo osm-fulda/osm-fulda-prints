@@ -9,3 +9,6 @@ shirt/tags-mapper-*-hell.png
 shirt/tags-mapper-*-dunkel.png
 shirt/quelle/tags-mapper-*-hell.svg
 shirt/quelle/tags-mapper-*-dunkel.svg
+
+# Drucksachen anderer Communities (bauen.py <name>.toml)
+ausgabe/

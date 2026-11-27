@@ -1,21 +1,21 @@
 """Gemeinsame Bausteine für die OSM-Fulda-Drucksachen.
 
-Schrift Barlow Condensed (OFL, ./fonts), Logo und Titelbild (./assets), QR-Codes als Vektor,
+Schrift Barlow Condensed (OFL, ./fonts), Community-Angaben (community.toml), QR-Codes als Vektor,
 Text-Messung für Zeilenumbruch und Ausrichtung. Alle Maße in mm.
 """
 import base64
 import os
 import subprocess
+import sys
+import tomllib
 
 import qrcode
 from fontTools.ttLib import TTFont
 from qrcode.constants import ERROR_CORRECT_M
 
 DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(DIR)
 FONT_DIR = os.path.join(DIR, "fonts")
-LOGO = os.path.join(DIR, "assets", "osm-fulda-logo.svg")
-BANNER = os.path.join(DIR, "assets", "titelbild.png")
-BANNER_RATIO = 2048 / 1280
 
 FONT = "Barlow Condensed"
 INK = "#2d3335"        # Textfarbe wie im Titelbild (QR-Codes bleiben reinschwarz)
@@ -25,22 +25,88 @@ ACCENT = "#3f7d32"     # Grün passend zur Karte im Titelbild
 W, H = 85, 55          # Kartenformat
 BLEED = 3              # Beschnitt rundum
 
-# Die QR-Codes zeigen nicht direkt aufs Ziel, sondern auf go.osm-fulda.de/<zweck>, ein Pfad je Zweck
-# (nicht je Dienst und nicht je Drucksache). So lässt sich ein Ziel ändern, ohne neu zu drucken.
-# Pfade und Ziele stehen im gitops-Repo (apps/redirects/go.yaml): Ein neuer Pfad muss dort zuerst
-# eingetragen sein. Gedruckte Pfade nie ändern.
-#   loslegen  finden  bearbeiten  fotos  chat  wiki  drucken
-def go(path):
-    return f"https://go.osm-fulda.de/{path}"
+# --- Community ---------------------------------------------------------------
+# Alles, was auf eine Community gemünzt ist (Ort, Absender, Logo, Titelbild, QR-Ziele), steht in einer
+# TOML-Datei: Standard ist community.toml (Fulda), eine andere wählt bauen.py über OSM_COMMUNITY.
+# Fulda baut wie bisher in die Ordner der Drucksachen, jede andere Community nach ausgabe/<name>/.
+
+DEFAULT_CONFIG = os.path.join(DIR, "community.toml")
+CONFIG = os.path.abspath(os.environ.get("OSM_COMMUNITY") or DEFAULT_CONFIG)
+with open(CONFIG, "rb") as _f:
+    COMMUNITY = tomllib.load(_f)
+EIGENE = CONFIG != DEFAULT_CONFIG
+SLUG = os.path.splitext(os.path.basename(CONFIG))[0]
 
 
-# Zum Abtippen unter den QR-Codes (manche scannen fremde QR-Codes lieber nicht)
-SHOW_WIKI = "osm.wiki/Fulda"      # Weiterleitung aufs Fulda-Wiki
-SHOW_MATRIX = "chat.osm-fulda.de"
-SHOW_STREETCOMPLETE = "streetcomplete.app"
-SHOW_OSMAPP = "osmapp.org"
-SHOW_PANORAMAX = "panorama.osm-fulda.de"
-SHOW_OSM_ORG = "openstreetmap.org"
+def _bild(key):
+    p = COMMUNITY.get("bilder", {}).get(key)
+    if not p:
+        return None
+    p = os.path.join(os.path.dirname(CONFIG), p)
+    if not os.path.isfile(p):
+        sys.exit(f"{CONFIG}: [bilder] {key} = {p} gibt es nicht")
+    return p
+
+
+ZWECKE = ["loslegen", "finden", "bearbeiten", "fotos", "chat", "wiki", "drucken"]   # shop ist freiwillig
+
+
+def _pruefen(c):
+    """Fehlende Einträge auf einmal melden – sonst bricht ein Skript irgendwo mit KeyError ab."""
+    fehlt = [k for k in ("ort", "schriftzug") if not isinstance(c.get(k), str)]
+    a = c.get("absender", {})
+    fehlt += [f"absender.{k}" for k in ("name", "kontakt") if not a.get(k)]
+    links = c.get("links", {})
+    for z in ZWECKE + (["shop"] if "shop" in links else []):
+        fehlt += [f"links.{z}.{k}" for k in ("url", "zeigen") if not links.get(z, {}).get(k)]
+    if fehlt:
+        sys.exit(f"{CONFIG}: es fehlt " + ", ".join(fehlt) + " (Vorlage: community-vorlage.toml)")
+
+
+_pruefen(COMMUNITY)
+ORT = COMMUNITY["ort"]
+SCHRIFTZUG = COMMUNITY["schriftzug"]
+ABSENDER = COMMUNITY["absender"]["name"]
+_kontakt = COMMUNITY["absender"]["kontakt"]
+KONTAKT = _kontakt if isinstance(_kontakt, str) else " · ".join(_kontakt)    # Liste oder ein String
+LOGO = _bild("logo") or os.path.join(DIR, "assets", "osm-logo.svg")
+BANNER = _bild("titelbild")          # None: der klassische Aushang zeigt Logo und Schriftzug
+LINKS = COMMUNITY["links"]
+
+
+def go(zweck):
+    """Ziel des QR-Codes für einen Zweck (loslegen, finden, bearbeiten, fotos, chat, wiki, drucken, shop)."""
+    return LINKS[zweck]["url"]
+
+
+def show(zweck):
+    """Adresse zum Abtippen unter dem QR-Code (manche scannen fremde QR-Codes lieber nicht)."""
+    return LINKS[zweck]["zeigen"]
+
+
+def ausgabe(teil):
+    """Ordner für die Dateien einer Drucksache (aushang, motivkarten, …): Fulda im Repo, sonst ausgabe/<name>/."""
+    d = os.path.join(ROOT, "ausgabe", SLUG, teil) if EIGENE else os.path.join(ROOT, teil)
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+_gemeldet = set()
+
+
+def shrink(s, weight, size, width, what="Text"):
+    """Schriftgröße, bei der s in width passt – höchstens size. Meldet (einmal), wenn verkleinert wird;
+    unter 2/3 der vorgesehenen Größe mit dem Rat, den Text in community.toml zu kürzen."""
+    w = text_width(s, weight, size)
+    if w <= width:
+        return size
+    new = size * width / w
+    if (what, s, size) not in _gemeldet:
+        _gemeldet.add((what, s, size))
+        rat = " – schwer lesbar, lieber kürzen" if new < size * 2 / 3 else ""
+        print(f"  Hinweis: {what} zu lang, auf {new / size:.0%} verkleinert{rat}: {s}", file=sys.stderr)
+    return new
+
 
 # --- Schrift -----------------------------------------------------------------
 
@@ -122,8 +188,18 @@ def logo_svg(x, y, size, dpi=1200):
     Vorab gerendert ohne Transparenz gibt es das Problem nicht (Karten sind weiß hinterlegt).
     """
     px = round(size / 25.4 * dpi)
-    data = subprocess.run(["rsvg-convert", "-b", "white", "-w", str(px), "-h", str(px), LOGO],
-                          check=True, capture_output=True).stdout
+    if LOGO.lower().endswith(".svg"):
+        data = subprocess.run(["rsvg-convert", "-b", "white", "-w", str(px), "-h", str(px), LOGO],
+                              check=True, capture_output=True).stdout
+    else:                                        # Pixelbild: auf Weiß, quadratisch eingepasst
+        from io import BytesIO
+        from PIL import Image, ImageOps
+        im = ImageOps.contain(Image.open(LOGO).convert("RGBA"), (px, px), Image.LANCZOS)   # auch vergrößern
+        flat = Image.new("RGB", (px, px), "#fff")
+        flat.paste(im, ((px - im.width) // 2, (px - im.height) // 2), im)
+        buf = BytesIO()
+        flat.save(buf, "PNG")
+        data = buf.getvalue()
     href = "data:image/png;base64," + base64.b64encode(data).decode()
     return f'<image x="{x:.2f}" y="{y:.2f}" width="{size}" height="{size}" href="{href}"/>'
 

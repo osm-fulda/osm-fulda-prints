@@ -20,20 +20,26 @@ W, H, M = 210, 297, 16
 TW = W - 2 * M
 INK, GREY = druck.INK, druck.GREY
 # Absender unten: Kontakt zur Community, nur Text (kein zweiter QR-Code). Der Name dunkel, die Adressen
-# in der Akzentfarbe des Blatts – so fallen sie auf wie die Adresse am QR-Code.
-FOOTER_NAME = "OpenStreetMap-Community Fulda"
-FOOTER_LINKS = f"{druck.SHOW_WIKI} · {druck.SHOW_MATRIX}"
+# in der Akzentfarbe des Blatts – so fallen sie auf wie die Adresse am QR-Code. Aus community.toml.
+FOOTER_NAME = druck.ABSENDER
+FOOTER_LINKS = druck.KONTAKT
 FOOTER = f"{FOOTER_NAME} · {FOOTER_LINKS}"
 FOOTER_SIZE = 5.4            # gedruckt (Maßstab 137/210) gut 3,5 mm
 
 
-def footer(out, x, y, ink, accent, size=FOOTER_SIZE, two_lines=False):
-    """Absenderzeile; y = Grundlinie (bei zwei Zeilen die der unteren). Gibt die Breite zurück."""
+def footer(out, x, y, ink, accent, size=FOOTER_SIZE, two_lines=False, width=TW):
+    """Absenderzeile; y = Grundlinie (bei zwei Zeilen die der unteren). Gibt die Breite zurück.
+
+    Zu lange Absender werden kleiner gesetzt (mit Hinweis), damit sie in width passen.
+    """
     if two_lines:
+        size = min(druck.shrink(FOOTER_NAME, 700, size, width, "Absender"),
+                   druck.shrink(FOOTER_LINKS, 700, size, width, "Kontakt"))
         out.append(text(x, y - size * 1.25, FOOTER_NAME, size, 700, ink))
         out.append(text(x, y, FOOTER_LINKS, size, 700, accent))
         return max(druck.text_width(FOOTER_NAME, 700, size), druck.text_width(FOOTER_LINKS, 700, size))
-    out.append(f'<text x="{x:.2f}" y="{y:.2f}" font-size="{size}" font-weight="700" fill="{ink}">'
+    size = druck.shrink(FOOTER, 700, size, width, "Absenderzeile")
+    out.append(f'<text x="{x:.2f}" y="{y:.2f}" font-size="{size:.3f}" font-weight="700" fill="{ink}">'
                f'{escape(FOOTER_NAME)} · <tspan fill="{accent}">{escape(FOOTER_LINKS)}</tspan></text>')
     return druck.text_width(FOOTER, 700, size)
 
@@ -99,8 +105,8 @@ def bottom(out, fg, sub, accent, line1, line2, *, url, qs=36, s1=6.2, s2=4.8, w1
     y = paragraph(out, tx, y + 3.5, line2, s2, tw, 500, sub, 1.3)
     rule = "Einzige Regel: Nur eintragen, was es wirklich gibt."
     y = paragraph(out, tx, y + 3, rule, s2, tw, 600, fg, 1.3)   # dunkel, damit es sich von der Adresse abhebt
-    out.append(text(tx, qy + qs, url_label or druck.SHOW_STREETCOMPLETE, 5.2, 700, accent))
-    assert footer(out, M, foot, fg, accent) <= TW, "Fußzeile zu lang"
+    out.append(text(tx, qy + qs, url_label or druck.show("loslegen"), 5.2, 700, accent))
+    footer(out, M, foot, fg, accent)
     assert y < qy + qs - 6, ("Text am QR-Code zu lang", round(y, 1), round(qy + qs - 6, 1))
     return qy - pad     # Oberkante des weißen QR-Felds
 
@@ -130,8 +136,9 @@ def a5(svg_text, uid):
 
 def build(name, svg_text):
     """SVG (A4-Koordinaten) und Vorschau-PNG schreiben, dazu den Druckbogen <name>-a4.pdf:
-    zwei Blätter im Endformat 137 x 194 mm auf A4 quer, mit Schnittmarken (make_a4.a5_two_up)."""
-    os.chdir(HERE)
+    zwei Blätter im Endformat 137 x 194 mm auf A4 quer, mit Schnittmarken (make_a4.a5_two_up).
+    Ordner: druck.ausgabe("aushang")."""
+    os.chdir(druck.ausgabe("aushang"))
     with open(f"{name}.svg", "w") as f:
         f.write(svg_text)
     druck.png(f"{name}.svg", f"{name}.png", dpi=110)

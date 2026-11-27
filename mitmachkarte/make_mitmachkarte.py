@@ -27,19 +27,16 @@ SAFE = 3.5                   # Sicherheitsabstand innen
 INK, GREY, ACCENT = druck.INK, druck.GREY, druck.ACCENT
 
 FRONT = {
-    "kicker": "OPENSTREETMAP FULDA",
+    "kicker": druck.SCHRIFTZUG,
     "head": ["Wir haben dich", "angefixt?"],
     "head2": ["Jetzt kommst du da", "nicht wieder raus."],     # Antwort auf die Frage, wie am Aufsteller
     "sub": ["Hinten findest du alles,", "was du zum Loslegen brauchst."],
 }
 
-GROUPS = [  # (Überschrift, [(Label, Adresse zum Abtippen, URL), …]) – je zwei Codes nebeneinander
-    ("LOSLEGEN", [("Lücken füllen", druck.SHOW_STREETCOMPLETE, druck.go("loslegen")),
-                  ("Orte finden", druck.SHOW_OSMAPP, druck.go("finden"))]),
-    ("MEHR MACHEN", [("Am PC bearbeiten", druck.SHOW_OSM_ORG, druck.go("bearbeiten")),
-                     ("Fotos beitragen", druck.SHOW_PANORAMAX, druck.go("fotos"))]),
-    ("MITREDEN", [("Chatte mit uns", druck.SHOW_MATRIX, druck.go("chat")),
-                  ("Fulda im Wiki", druck.SHOW_WIKI, druck.go("wiki"))]),
+GROUPS = [  # (Überschrift, [(Label, Zweck), …]) – je zwei Codes nebeneinander; Ziele aus community.toml
+    ("LOSLEGEN", [("Lücken füllen", "loslegen"), ("Orte finden", "finden")]),
+    ("MEHR MACHEN", [("Am PC bearbeiten", "bearbeiten"), ("Fotos beitragen", "fotos")]),
+    ("MITREDEN", [("Chatte mit uns", "chat"), (f"{druck.ORT} im Wiki", "wiki")]),
 ]
 
 QR_SIZE = 14.5
@@ -76,7 +73,8 @@ def front():
     y = 7
     out.append(logo_svg((W - ls) / 2, y, ls))
     y += ls + 3 + cap_height(500, 2.6)
-    out.append(text(W / 2 + 0.55 / 2, y, FRONT["kicker"], 2.6, 500, GREY, "middle", spacing=0.55))
+    ks = druck.shrink(FRONT["kicker"], 500, 2.6, W - 2 * SAFE - len(FRONT["kicker"]) * 0.55, "Schriftzug")
+    out.append(text(W / 2 + 0.55 / 2, y, FRONT["kicker"], ks, 500, GREY, "middle", spacing=0.55))
     hs = fit(FRONT["head"] + FRONT["head2"], 700, 8.0, W - 2 * SAFE)
     y = centered_lines(out, y + 4.5, FRONT["head"], hs, 700, lead=1.1)
     y = centered_lines(out, y + 5.0, FRONT["head2"], hs, 700, lead=1.1)
@@ -107,7 +105,8 @@ def back():
         out.append(f'<line x1="{SAFE + 1}" y1="{ly:.2f}" x2="{W / 2 - half:.2f}" y2="{ly:.2f}" {line}/>')
         out.append(f'<line x1="{W / 2 + half:.2f}" y1="{ly:.2f}" x2="{W - SAFE - 1}" y2="{ly:.2f}" {line}/>')
         qy = hy + 2.2
-        for i, (label, show, url) in enumerate(codes):
+        for i, (label, zweck) in enumerate(codes):
+            show, url = druck.show(zweck), druck.go(zweck)
             cx = SAFE + cell * (i + 0.5)
             d, ver, n, module = qr_path(url, cx - QR_SIZE / 2, qy, QR_SIZE)
             print(f"  {label:17} v{ver:<2} {n}x{n} Module, {module:.2f} mm/Modul")
@@ -115,16 +114,16 @@ def back():
             # Ruhezone 4 Module: zwischen den Codes und zum Rand frei
             assert cell - QR_SIZE >= 2 * 4 * module - 0.01, "Codes stehen zu eng"
             lyb = qy + QR_SIZE + 1.0 + cap_height(600, LABEL_SIZE)
-            out.append(text(cx, lyb, label, LABEL_SIZE, 600, INK, "middle"))
-            out.append(text(cx, lyb + 0.9 + cap_height(500, SUB_SIZE), show, SUB_SIZE, 500, GREY, "middle"))
-            for s, wgt, size in [(label, 600, LABEL_SIZE), (show, 500, SUB_SIZE)]:
-                assert text_width(s, wgt, size) <= cell - 0.6, ("Text zu breit", s)
+            ls = druck.shrink(label, 600, LABEL_SIZE, cell - 0.6, "Beschriftung")
+            ss = druck.shrink(show, 500, SUB_SIZE, cell - 0.6, "Adresse")
+            out.append(text(cx, lyb, label, ls, 600, INK, "middle"))
+            out.append(text(cx, lyb + 0.9 + cap_height(500, SUB_SIZE), show, ss, 500, GREY, "middle"))
         y += gh + GROUP_GAP
     return "#fff", out
 
 
 def main():
-    os.chdir(HERE)
+    os.chdir(druck.ausgabe("mitmachkarte"))
     druck.use_project_fonts()
     print("Rückseite:")
     sides = {"vorne": front(), "hinten": back()}

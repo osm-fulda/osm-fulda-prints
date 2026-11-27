@@ -1,0 +1,56 @@
+# Vorlage für eure Community: kopieren, ausfüllen, bauen:
+#   cp community-vorlage.toml musterstadt.toml
+#   python3 bauen.py musterstadt.toml
+# Die Drucksachen landen in ausgabe/musterstadt/. Alles mit MUSTERSTADT ersetzen.
+# Zu lange Texte werden kleiner gesetzt; bauen.py sagt dann, wo.
+
+# Ortsname im Text: „Gemacht von Menschen wie dir – auch in Musterstadt.“, „Musterstadt im Wiki“
+ort = "Musterstadt"
+# Schriftzug über den Überschriften, in Versalien
+schriftzug = "OPENSTREETMAP MUSTERSTADT"
+
+# Absender unten auf Aushängen und Motivkarten: Name, dahinter die Adressen zum Abtippen.
+# Kurz halten (eine oder zwei kurze Adressen), sonst wird die Zeile klein.
+[absender]
+name = "OpenStreetMap-Community Musterstadt"
+kontakt = ["osm.wiki/Musterstadt"]
+
+# Bilder, Pfade relativ zu dieser Datei. Weglassen geht:
+#   logo      – ohne: das OpenStreetMap-Logo
+#   titelbild – ohne: der klassische Aushang zeigt oben Logo und Schriftzug
+[bilder]
+# logo = "logo.svg"          # quadratisch, SVG oder PNG
+# titelbild = "titel.png"    # 16:10
+
+# QR-Codes: url = Ziel des Codes, zeigen = Adresse zum Abtippen darunter.
+# Tipp: Wer eine eigene Domain hat, nimmt Weiterleitungen (z. B. go.example.org/loslegen) –
+# dann lässt sich ein Ziel ändern, ohne neu zu drucken.
+[links.loslegen]      # Aushänge, Motivkarten, Mitmachkarte: StreetComplete
+url = "https://streetcomplete.app/"
+zeigen = "streetcomplete.app"
+
+[links.finden]        # Mitmachkarte: Orte finden
+url = "https://osmapp.org/"
+zeigen = "osmapp.org"
+
+[links.bearbeiten]    # Mitmachkarte: am PC bearbeiten
+url = "https://www.openstreetmap.org/"
+zeigen = "openstreetmap.org"
+
+[links.fotos]         # Mitmachkarte: Fotos mit Panoramax
+url = "https://panoramax.xyz/"
+zeigen = "panoramax.xyz"
+
+[links.chat]          # Mitmachkarte: Chat der Community – MUSTERSTADT ersetzen
+url = "https://matrix.to/#/#musterstadt:matrix.org"
+zeigen = "Matrix: #musterstadt"
+
+[links.wiki]          # Mitmachkarte: Wiki-Seite der Community – MUSTERSTADT ersetzen
+url = "https://wiki.openstreetmap.org/wiki/Musterstadt"
+zeigen = "osm.wiki/Musterstadt"
+
+[links.drucken]       # Aufsteller: „Vergriffen? Alle Druckvorlagen zum Selbstdrucken“
+url = "https://github.com/osm-fulda/osm-fulda-prints"
+zeigen = "github.com/osm-fulda/osm-fulda-prints"
+
+# Den Shop-Aufsteller gibt es nur für Fulda (er zeigt die Fuldaer Shirts), darum hier kein [links.shop].

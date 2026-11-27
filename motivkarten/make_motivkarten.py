@@ -45,7 +45,7 @@ BACK = {
     # das Warum: wohin die Antwort geht (OSM ist keine Karte, sondern freie Daten)
     "body": ["Deine Antwort landet in OpenStreetMap –", "freie Daten, die Apps weltweit nutzen."],
     "rule": ["Einzige Regel: Nur eintragen,", "was es wirklich gibt."],     # feste Zeilen
-    "community": ["OpenStreetMap-Community Fulda", f"{druck.SHOW_WIKI} · {druck.SHOW_MATRIX}"],
+    "community": [druck.ABSENDER, druck.KONTAKT],        # aus community.toml
 }
 
 
@@ -87,15 +87,16 @@ def front_klassisch():
     y = 7
     out.append(druck.logo_svg((W - ls) / 2, y, ls))
     y += ls + 3
-    kick, ks = "OPENSTREETMAP FULDA", 2.6
-    sp = 0.55
+    kick, sp = druck.SCHRIFTZUG, 0.55
+    ks = druck.shrink(kick, 500, 2.6, TW - len(kick) * sp, "Schriftzug")
     y += cap(500, ks)
     out.append(text(W / 2 + sp / 2, y, kick, ks, 500, GREY, "middle", spacing=sp))
     head = ["Du nutzt diese", "Karte jeden Tag.", "Ohne es zu wissen."]
     hs = fit(head, 700, 7.2)
     y = lines_block(out, y + 5, head, hs, 700, lead=1.12, x=W / 2, anchor="middle")
-    sub = ["Gemacht von Menschen wie dir –", "auch in Fulda."]
-    y = lines_block(out, y + 3.6, sub, 3.6, 500, ACCENT, lead=1.25, x=W / 2, anchor="middle")
+    sub = ["Gemacht von Menschen wie dir –", f"auch in {druck.ORT}."]
+    ss = min(druck.shrink(l, 500, 3.6, TW, "Untertitel") for l in sub)
+    y = lines_block(out, y + 3.6, sub, ss, 500, ACCENT, lead=1.25, x=W / 2, anchor="middle")
     assert y < H - SAFE - 2, ("Vorderseite zu voll", round(y, 1))
     return "#fff", out
 
@@ -253,19 +254,21 @@ def back(url):
     print(f"  QR {url}: v{ver} {n}x{n} Module, {module:.2f} mm/Modul")
     out.append(f'<path d="{d}" fill="#000"/>')
     y = qy + qs + 1.4 + cap(700, 3.6)
-    out.append(text(mid, y, druck.SHOW_STREETCOMPLETE, 3.6, 700, ACCENT, "middle"))
+    out.append(text(mid, y, druck.show("loslegen"), 3.6, 700, ACCENT, "middle"))
     y = lines_block(out, y + 3, BACK["body"], 2.8, 500, INK, lead=1.3, x=mid, anchor="middle")
     y = lines_block(out, y + 2, BACK["rule"], 2.8, 600, INK, lead=1.3, x=mid, anchor="middle")
     # Absender unten: Logo und zwei Zeilen als Gruppe, mittig
-    ls, fs = 9, 2.6
+    ls = 9
     c1, c2 = BACK["community"]
+    room = W - 2 * (SAFE - 1) - ls - 1.6                # Platz rechts vom Logo
+    fs = min(druck.shrink(c1, 700, 2.6, room, "Absender"), druck.shrink(c2, 600, 2.6, room, "Kontakt"))
     tw = max(druck.text_width(c1, 700, fs), druck.text_width(c2, 600, fs))
     gx = (W - (ls + 1.6 + tw)) / 2
     ly = H - SAFE - ls + 0.5
     out.append(f'<line x1="{SAFE + 4}" y1="{ly - 2.4:.2f}" x2="{W - SAFE - 4}" y2="{ly - 2.4:.2f}" '
                f'stroke="#ccc" stroke-width="0.2"/>')
     assert y < ly - 5, ("Rückseite zu voll", round(y, 1), round(ly - 5, 1))
-    assert gx >= SAFE - 1, "Absender zu breit"
+    assert gx >= SAFE - 1.01, "Absender zu breit"
     out.append(druck.logo_svg(gx, ly, ls))
     tx = gx + ls + 1.6
     out.append(text(tx, ly + ls / 2 - 0.6, c1, fs, 700, INK))
@@ -316,7 +319,7 @@ def overview(out="vorschau.png", h=700, gap=20, head=44):
 
 
 def main():
-    os.chdir(HERE)
+    os.chdir(druck.ausgabe("motivkarten"))
     druck.use_project_fonts()
     bg, body = back(druck.go("loslegen"))
     write("motivkarte-hinten.svg", portrait(bg, body))

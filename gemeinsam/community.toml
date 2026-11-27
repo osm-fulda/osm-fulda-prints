@@ -1,0 +1,54 @@
+# Was auf den Drucksachen eurer Community steht – hier die Werte für Fulda.
+# Für eine andere Community: ../community-vorlage.toml kopieren, ausfüllen und
+#   python3 bauen.py meine-community.toml
+# aufrufen (siehe README, „Für eure Community“).
+
+# Ortsname im Text: „Gemacht von Menschen wie dir – auch in Fulda.“, „Fulda im Wiki“
+ort = "Fulda"
+# Schriftzug über den Überschriften, in Versalien
+schriftzug = "OPENSTREETMAP FULDA"
+
+# Absender unten auf Aushängen und Motivkarten: Name, dahinter die Adressen zum Abtippen
+[absender]
+name = "OpenStreetMap-Community Fulda"
+kontakt = ["osm.wiki/Fulda", "chat.osm-fulda.de"]
+
+# Bilder, Pfade relativ zu dieser Datei
+[bilder]
+logo = "assets/osm-fulda-logo.svg"     # quadratisch, SVG oder PNG
+titelbild = "assets/titelbild.png"     # 16:10, oben auf dem klassischen Aushang
+
+# QR-Codes: url = Ziel des Codes, zeigen = Adresse zum Abtippen darunter.
+# Fulda nutzt Weiterleitungen (go.osm-fulda.de/<zweck>, Ziele im gitops-Repo, apps/redirects/go.yaml),
+# damit sich ein Ziel ändern lässt, ohne neu zu drucken. Gedruckte Pfade nie ändern.
+[links.loslegen]      # Aushänge, Motivkarten, Mitmachkarte: StreetComplete
+url = "https://go.osm-fulda.de/loslegen"
+zeigen = "streetcomplete.app"
+
+[links.finden]        # Mitmachkarte: Orte finden
+url = "https://go.osm-fulda.de/finden"
+zeigen = "osmapp.org"
+
+[links.bearbeiten]    # Mitmachkarte: am PC bearbeiten
+url = "https://go.osm-fulda.de/bearbeiten"
+zeigen = "openstreetmap.org"
+
+[links.fotos]         # Mitmachkarte: Fotos mit Panoramax
+url = "https://go.osm-fulda.de/fotos"
+zeigen = "panorama.osm-fulda.de"
+
+[links.chat]          # Mitmachkarte: Chat der Community
+url = "https://go.osm-fulda.de/chat"
+zeigen = "chat.osm-fulda.de"
+
+[links.wiki]          # Mitmachkarte: Wiki-Seite der Community
+url = "https://go.osm-fulda.de/wiki"
+zeigen = "osm.wiki/Fulda"
+
+[links.drucken]       # Aufsteller: „Vergriffen? Alle Druckvorlagen zum Selbstdrucken“
+url = "https://go.osm-fulda.de/drucken"
+zeigen = "github.com/osm-fulda/osm-fulda-prints"
+
+[links.shop]          # Aufsteller „Sei unsere Werbetafel!“ – ohne diesen Eintrag kein Shop-Aufsteller
+url = "https://go.osm-fulda.de/shop"
+zeigen = "3dsupply.de/de/designer/openstreetmap-fulda"

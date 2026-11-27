@@ -209,7 +209,7 @@ def poster():
                       "Die App StreetComplete fragt dich unterwegs nach Stufen, Rampen und Bordsteinen. "
                       "Mit deinen Antworten planen andere ihren Weg – zum Beispiel mit Wheelmap.",
                       url=druck.go("loslegen"), qs=51, s1=9.0, s2=5.0, w1=700, qr_right=True,
-                      url_label="Scan und hilf mit → streetcomplete.app")   # Pfeil zeigt zum QR-Code
+                      url_label=f"Scan und hilf mit → {druck.show('loslegen')}")   # Pfeil zeigt zum QR-Code
     assert y < qtop - 6, (y, qtop)
     return c.page(BG, out)
 
