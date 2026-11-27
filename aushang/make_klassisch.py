@@ -29,10 +29,29 @@ import druck  # noqa: E402
 import make_a4  # noqa: E402
 
 FONT_DIR = druck.FONT_DIR
-# Titelbild eingebettet: librsvg lädt keine Dateien außerhalb des SVG-Ordners
-with open(druck.BANNER, "rb") as _f:
-    BANNER = "data:image/png;base64," + base64.b64encode(_f.read()).decode()
-BANNER_RATIO = 2048 / 1280
+# Titelbild eingebettet: librsvg lädt keine Dateien außerhalb des SVG-Ordners.
+# Ohne Titelbild (community.toml) steht oben stattdessen Logo und Schriftzug.
+def _banner(path):
+    """Titelbild als data-URI. PNG und JPEG direkt, SVG über rsvg-convert, alles andere über Pillow als PNG."""
+    ext = os.path.splitext(path)[1].lower()
+    if ext in (".png", ".jpg", ".jpeg"):
+        mime = "image/png" if ext == ".png" else "image/jpeg"
+        with open(path, "rb") as f:
+            data = f.read()
+    elif ext == ".svg":
+        mime = "image/png"
+        data = subprocess.run(["rsvg-convert", "-w", "2048", path], check=True, capture_output=True).stdout
+    else:
+        from io import BytesIO
+        from PIL import Image
+        mime, buf = "image/png", BytesIO()
+        Image.open(path).convert("RGB").save(buf, "PNG")
+        data = buf.getvalue()
+    return f"data:{mime};base64," + base64.b64encode(data).decode()
+
+
+BANNER = _banner(druck.BANNER) if druck.BANNER else None
+BANNER_RATIO = 2048 / 1280     # 16:10, andere Formate werden mittig beschnitten
 
 W, H = 148, 210        # A5 in mm
 M = 9                  # Rand (größer als nicht bedruckbarer Druckerrand)
@@ -44,7 +63,7 @@ ACCENT = "#3f7d32"     # Grün passend zur Karte im Banner
 
 FRONT = {
     "headline": ["Du nutzt diese Karte jeden Tag.", "Ohne es zu wissen."],   # Zeilen
-    "sub": "Gemacht von Menschen wie dir – auch in Fulda.",
+    "sub": f"Gemacht von Menschen wie dir – auch in {druck.ORT}.",
     "body": "OpenStreetMap ist die freie Datenbank hinter vielen Karten, Apps und Websites – vom "
             "Fahrradnavi bis zur Wander-App. Jeder Weg, jede Parkbank und jeder Spielplatz darin "
             "wurde von Freiwilligen eingetragen.",
@@ -54,7 +73,7 @@ FRONT = {
     "cta_body": "Die App StreetComplete stellt dir unterwegs kurze Fragen. Ein Fingertipp genügt.",
     "rule": "Einzige Regel: Nur eintragen, was es wirklich gibt.",
     # Absender: Name dunkel, Adressen grün – so groß und auffällig wie bei den anderen Aushängen
-    "footer": ("OpenStreetMap-Community Fulda", f"{druck.SHOW_WIKI} · {druck.SHOW_MATRIX}"),
+    "footer": (druck.ABSENDER, druck.KONTAKT),
 }
 
 # --- Schrift -----------------------------------------------------------------
@@ -163,33 +182,46 @@ def qr_cta(out, y_bottom):
     y += (len(FRONT["cta"]) - 1) * s1 * 1.15
     y = paragraph(out, tx, y + 3, FRONT["cta_body"], s2, tw)
     y = paragraph(out, tx, y + 2.2, FRONT["rule"], s2, tw, 600)
-    out.append(text(tx, qy + qs, druck.SHOW_STREETCOMPLETE, 5.4, 700, ACCENT))
+    out.append(text(tx, qy + qs, druck.show("loslegen"), 5.4, 700, ACCENT))
     assert y < qy + qs - 5.4 - 2, ("Text am QR-Code zu lang", round(y, 1))
     return qy - pad
+
+
+def logo_head(out, bh):
+    """Ersatz fürs Titelbild: Logo und Schriftzug mittig, gleich hoch wie das Titelbild."""
+    ks, sp = 5.0, 1.0
+    ks = druck.shrink(druck.SCHRIFTZUG, 500, ks, TW - len(druck.SCHRIFTZUG) * sp, "Schriftzug")
+    ls = bh - 6 - cap(500, ks) - 4
+    out.append(druck.logo_svg((W - ls) / 2, M + 2, ls))
+    out.append(text(W / 2 + sp / 2, M + 2 + ls + 4 + cap(500, ks), druck.SCHRIFTZUG, ks, 500, GREY, "middle")
+               .replace("<text ", f'<text letter-spacing="{sp}" ', 1))
 
 
 def front(uid):
     out = []
     bh = TW / BANNER_RATIO
-    out.append(f'<clipPath id="{uid}-banner"><rect x="{M}" y="{M}" width="{TW}" height="{bh:.2f}" rx="3"/></clipPath>')
-    out.append(f'<image href="{BANNER}" x="{M}" y="{M}" width="{TW}" height="{bh:.2f}" '
-               f'preserveAspectRatio="xMidYMid slice" clip-path="url(#{uid}-banner)"/>')
+    if BANNER:
+        out.append(f'<clipPath id="{uid}-banner"><rect x="{M}" y="{M}" width="{TW}" height="{bh:.2f}" rx="3"/></clipPath>')
+        out.append(f'<image href="{BANNER}" x="{M}" y="{M}" width="{TW}" height="{bh:.2f}" '
+                   f'preserveAspectRatio="xMidYMid slice" clip-path="url(#{uid}-banner)"/>')
+    else:
+        logo_head(out, bh)
     y = M + bh + 7
     hs = headline_size()
     y += cap(700, hs)
     for i, line in enumerate(FRONT["headline"]):
         out.append(text(M, y + i * hs * HEAD_LEAD, line, hs, 700))
     y += (len(FRONT["headline"]) - 1) * hs * HEAD_LEAD
-    y += 4.5 + cap(500, 6.2)
-    out.append(text(M, y, FRONT["sub"], 6.2, 500, ACCENT))
+    ss = druck.shrink(FRONT["sub"], 500, 6.2, TW, "Untertitel")
+    y += 4.5 + cap(500, ss)
+    out.append(text(M, y, FRONT["sub"], ss, 500, ACCENT))
     y = paragraph(out, M, y + 4.5, FRONT["body"], 4.3, TW)
 
     foot = H - M
     name, links = FRONT["footer"]
-    fs = 3.9                                   # gedruckt (Maßstab 137/148) gut 3,5 mm
-    out.append(f'<text x="{M}" y="{foot:.2f}" font-size="{fs}" font-weight="700" fill="{INK}">'
+    fs = druck.shrink(f"{name} · {links}", 700, 3.9, TW, "Absenderzeile")   # gedruckt (137/148) gut 3,5 mm
+    out.append(f'<text x="{M}" y="{foot:.2f}" font-size="{fs:.3f}" font-weight="700" fill="{INK}">'
                f'{escape(name)} · <tspan fill="{ACCENT}">{escape(links)}</tspan></text>')
-    assert text_width(f"{name} · {links}", 700, fs) <= TW, "Fußzeile zu lang"
     top = qr_cta(out, foot - 8)
     assert top >= y + 6, ("Vorderseite zu voll", round(y, 1), round(top, 1))
     return out
@@ -217,7 +249,7 @@ def render(svg_files, out):
 
 
 def main():
-    os.chdir(HERE)
+    os.chdir(druck.ausgabe("aushang"))
     use_project_fonts()
     print("Vorderseite:")
     with open("aushang-klassisch.svg", "w") as f:

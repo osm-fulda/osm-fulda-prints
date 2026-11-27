@@ -44,6 +44,11 @@ A5 = ((148, 210), 0)
 A4 = ((210, 297), 0)                     # Aushänge, die auf A4 gezeichnet und als A5 gedruckt werden
 
 
+def built(teil, name):
+    """Vorschaubild einer gebauten Drucksache (Ordner je nach Community, siehe druck.ausgabe)."""
+    return os.path.join(druck.ausgabe(teil), name)
+
+
 def photo(path):
     """Freigestelltes Foto (transparenter Grund): Format aus den Pixeln, ohne Papierkante."""
     with Image.open(os.path.join(ROOT, path)) as im:
@@ -58,39 +63,41 @@ def photo(path):
 # Optional am Ende: Kopfzeile und Fuß (Zeilen, QR-Ziel) statt KICKER / FOOTER.
 STANDS = [
     ("mitmachkarte", "single", ["Wir haben dich angefixt?", "", "Jetzt kommst du da", "nicht wieder raus."],
-     [("mitmachkarte/mitmachkarte-vorne.png", CARD_UPRIGHT, None),
-      ("mitmachkarte/mitmachkarte-hinten.png", CARD_UPRIGHT, None)],
+     [(built("mitmachkarte", "mitmachkarte-vorne.png"), CARD_UPRIGHT, None),
+      (built("mitmachkarte", "mitmachkarte-hinten.png"), CARD_UPRIGHT, None)],
      [(None, ["Auf dieser Karte steht alles, was du brauchst:", "Apps, Fotos, am PC bearbeiten –",
               "und wo du uns findest."])]),
     ("aushang", "series", "Häng mich auf!",
-     [("aushang/aushang-klassisch.png", A5, ("Klassisch", "für alle")),
-      ("aushang/aushang-gelb.png", A4, ("Gelb", "Politik, Daten")),
-      ("aushang/aushang-pixel.png", A4, ("Pixel", "Gamer")),
-      ("aushang/aushang-pappe.png", A4, ("Pappe", "Umwelt, Klima")),
-      ("aushang/aushang-sozial.png", A4, ("Sozial", "Barrierefreiheit"))],
+     [(built("aushang", "aushang-klassisch.png"), A5, ("Klassisch", "für alle")),
+      (built("aushang", "aushang-gelb.png"), A4, ("Gelb", "Politik, Daten")),
+      (built("aushang", "aushang-pixel.png"), A4, ("Pixel", "Gamer")),
+      (built("aushang", "aushang-pappe.png"), A4, ("Pappe", "Umwelt, Klima")),
+      (built("aushang", "aushang-sozial.png"), A4, ("Sozial", "Barrierefreiheit"))],
      "Ans Schwarze Brett, an die Pinnwand, ins Schaufenster. Such dir das Motiv aus, "
      "das zu den Leuten dort passt."),
     ("motivkarten", "series", "Leg mich aus!",
-     [("motivkarten/motivkarte-klassisch.png", CARD_UPRIGHT, ("Klassisch", "für alle")),
-      ("motivkarten/motivkarte-gelb.png", CARD_UPRIGHT, ("Gelb", "Politik, Daten")),
-      ("motivkarten/motivkarte-pixel.png", CARD_UPRIGHT, ("Pixel", "Gamer")),
-      ("motivkarten/motivkarte-pappe.png", CARD_UPRIGHT, ("Pappe", "Umwelt, Klima")),
-      ("motivkarten/motivkarte-sozial.png", CARD_UPRIGHT, ("Sozial", "Barrierefreiheit"))],
+     [(built("motivkarten", "motivkarte-klassisch.png"), CARD_UPRIGHT, ("Klassisch", "für alle")),
+      (built("motivkarten", "motivkarte-gelb.png"), CARD_UPRIGHT, ("Gelb", "Politik, Daten")),
+      (built("motivkarten", "motivkarte-pixel.png"), CARD_UPRIGHT, ("Pixel", "Gamer")),
+      (built("motivkarten", "motivkarte-pappe.png"), CARD_UPRIGHT, ("Pappe", "Umwelt, Klima")),
+      (built("motivkarten", "motivkarte-sozial.png"), CARD_UPRIGHT, ("Sozial", "Barrierefreiheit"))],
      "Ins Wartezimmer, ins Café, in den Jugendtreff – überall, wo Leute warten. "
      "Such dir ein Motiv aus und nimm gleich ein paar mit."),
+]
+# Shop-Aufsteller nur für Fulda (zeigt die Fuldaer Shirts) und nur, wenn community.toml einen Shop nennt
+STANDS += [] if druck.EIGENE or "shop" not in druck.LINKS else [
     ("shop", "series", "Sei unsere Werbetafel!",
      [(*photo("shirt/fotos/mapper.webp"), ("Mapper", "Shirt")),
       (*photo("shirt/fotos/hoodie-stadtplan.webp"), ("Stadtplan", "Hoodie")),
       (*photo("shirt/fotos/shirt-tailliert.webp"), ("Logo klein", "Shirt tailliert")),
       (*photo("shirt/fotos/tasse.webp"), ("Logo groß", "Tasse"))],
      "Du willst das Projekt bekannter machen? Dann zeig es – unterwegs und im Büro.",
-     {"kicker": "OPENSTREETMAP FULDA · SHOP",
+     {"kicker": f"{druck.SCHRIFTZUG} · SHOP",
       # Text zeigt das echte Ziel (zum Abtippen), der Code geht über go, damit der Shop wechseln kann
-      "footer": (["Shirts, Hoodies und Tassen bestellen:", "3dsupply.de/de/designer/openstreetmap-fulda"],
-                 druck.go("shop"))}),
+      "footer": (["Shirts, Hoodies und Tassen bestellen:", druck.show("shop")], druck.go("shop"))}),
 ]
 
-KICKER = "OPENSTREETMAP FULDA · KOSTENLOS"
+KICKER = f"{druck.SCHRIFTZUG} · KOSTENLOS"
 KICKER_SIZE = 3.6
 PREVIEW_MAX_W = 78
 PREVIEW_GAP = 4
@@ -99,8 +106,8 @@ BODY = 5.2
 BODY_LEAD = 1.32
 PARA_GAP = 3.0
 CAPTION = 3.2
-FOOTER = ["Vergriffen? Alle Druckvorlagen zum Selbstdrucken:", "github.com/osm-fulda/osm-fulda-prints"]
-FOOTER_URL = druck.go("drucken")   # → github.com/osm-fulda/osm-fulda-prints
+FOOTER = ["Vergriffen? Alle Druckvorlagen zum Selbstdrucken:", druck.show("drucken")]
+FOOTER_URL = druck.go("drucken")
 FOOTER_SIZE = 3.4
 FOOTER_QR = 14.0
 
@@ -281,7 +288,7 @@ def sheet(kind, head, images, body, opts=None):
 
 
 def main():
-    os.chdir(HERE)
+    os.chdir(druck.ausgabe("aufsteller"))
     druck.use_project_fonts()
     svgs = []
     for name, kind, head, images, body, *opts in STANDS:

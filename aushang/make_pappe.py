@@ -194,7 +194,7 @@ def qr_note(out, x, y, size, rot, url):
     out.append(f'<path d="{d}" fill="#000" opacity="0.2" transform="translate(1.6 2.2)"/>')
     out.append(f'<path d="{d}" fill="#fff"/>')
     out.append(f'<g transform="translate({x + pad:.2f} {y + pad:.2f})"><path d="{d_qr}" fill="#000"/></g>')
-    out.append(text(cx, y + pad + size + 7.5, druck.SHOW_STREETCOMPLETE, 5.2, 700, c.INK, "middle"))
+    out.append(text(cx, y + pad + size + 7.5, druck.show("loslegen"), 5.2, 700, c.INK, "middle"))
     out.append(f'<rect x="{cx - 14:.1f}" y="{y - 4:.1f}" width="28" height="9" fill="{TAPE}" opacity="0.9" '
                f'transform="rotate(-6 {cx:.1f} {y:.1f})"/>')
     out.append("</g>")
@@ -241,11 +241,11 @@ def poster():
     foot = H - M + 3
     # Absender zweizeilig links vom Pfosten (Name dunkel, Adressen grün), darunter klein die Regel
     fy = foot - 6.5
-    fw = c.footer(out, M, fy, c.INK, PEN_GREEN, two_lines=True)
     # Linke Kante des Pfostens auf Höhe der Zeile (Schild samt Pfosten um -4° gedreht, Latte 10 mm breit)
     a = math.radians(4)
     top_line = fy - c.FOOTER_SIZE * 1.25 - druck.cap_height(700, c.FOOTER_SIZE)
     pole = stick_x - 5 * math.cos(a) + (top_line - (M + 27 + sh / 2)) * math.sin(a)
+    fw = c.footer(out, M, fy, c.INK, PEN_GREEN, two_lines=True, width=pole - 3.01 - M)
     assert M + fw < pole - 3, "Fußzeile läuft in den Pfosten"
     out.append(text(M, foot, "Einzige Regel: Nur eintragen, was es wirklich gibt.", 3.6, 500, "#2b4a5e"))
     assert y < top_line - 4, (round(y, 1), round(top_line - 4, 1))

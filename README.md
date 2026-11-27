@@ -66,35 +66,54 @@ Tischaufsteller A4, zum Dreieck gefaltet, von beiden Seiten lesbar, mit QR-Code 
 | <img src="shirt/vorschau.png" width="520" alt="Shirt-Motive"> |
 | Motive für den DTF-Druck. Details, Druckgrenzen und Daten: [`shirt/README.md`](shirt/README.md). |
 
-`gemeinsam/` enthält, was alle nutzen: `druck.py` (Schrift, QR, Logo, URLs, Hochkant-Karten),
+`gemeinsam/` enthält, was alle nutzen: `community.toml` (Ort, Absender, Logo, QR-Ziele), `druck.py` (Schrift, QR, Logo, Hochkant-Karten),
 `make_a4.py` (Druckbögen für Karten und Aushänge), Schriften, Logo und Titelbild.
 
 ## Bauen
 
 ```sh
-for f in aushang/make_*.py; do python3 "$f"; done
-python3 motivkarten/make_motivkarten.py   # nutzt die Zeichnungen aus aushang/
-python3 mitmachkarte/make_mitmachkarte.py
-python3 aufsteller/make_aufsteller.py     # zuletzt: nimmt die Vorschaubilder der anderen
-shirt/quelle/build.sh                     # braucht zusätzlich ImageMagick (magick)
+python3 bauen.py          # Aushänge, Motivkarten, Mitmachkarte, Aufsteller – in dieser Reihenfolge
+shirt/quelle/build.sh     # Shirts, braucht zusätzlich ImageMagick (magick)
 ```
 
-Braucht: Python 3 mit `qrcode`, `fonttools`, `Pillow`; `rsvg-convert` (librsvg); optional `gs`
+Einzelne Drucksachen baut auch ihr Skript allein, zum Beispiel `python3 aushang/make_gelb.py`.
+
+Braucht: Python ab 3.11 mit `qrcode`, `fonttools`, `Pillow`; `rsvg-convert` (Fedora: `librsvg2-tools`,
+Debian/Ubuntu: `librsvg2-bin`, macOS: `brew install librsvg`); optional `gs`
 (Ghostscript – komprimiert die Bögen von ~18 MB auf ~2 MB). Zum Prüfen der Codes: `zbarimg`.
 Die Schriften werden aus `gemeinsam/fonts/` geladen, installieren ist nicht nötig.
 
-Texte, Labels und Adressen stehen jeweils oben im Skript, gemeinsame in `gemeinsam/druck.py`.
+Texte und Labels stehen jeweils oben im Skript. Ort, Absender, Logo, Titelbild und QR-Ziele stehen in
+`gemeinsam/community.toml`.
 
 **QR-Codes** zeigen nie direkt aufs Ziel, sondern auf `go.osm-fulda.de/<zweck>`, ein Pfad je Zweck
 (`loslegen`, `finden`, `bearbeiten`, `fotos`, `chat`, `wiki`, `drucken`). So lässt sich ein Ziel
 ändern, ohne neu zu drucken.
 Die Ziele stehen im gitops-Repo (`apps/redirects/go.yaml`); ein neuer Pfad muss dort zuerst
-eingetragen sein. Gedruckte Pfade nie ändern.
+eingetragen sein. Gedruckte Pfade nie ändern. Die Zuordnung Zweck → Weiterleitung steht in
+`gemeinsam/community.toml`.
 Jedes Skript prüft, dass sich nichts überlagert und alles in die Fläche passt, und bricht sonst ab.
 
 **Achtung:** Die Skripte überschreiben die SVGs. Änderungen am besten im Skript machen; die
 Hochkant-Karten liegen auf dem Bogen gedreht, eine in Inkscape bearbeitete SVG landet nicht von
 selbst dort. Für Inkscape vorher `gemeinsam/fonts/*.ttf` nach `~/.local/share/fonts/` kopieren.
+
+## Für eure Community
+
+Alles, was auf Fulda gemünzt ist, steht in [`gemeinsam/community.toml`](gemeinsam/community.toml):
+Ortsname, Schriftzug, Absender mit Kontakt, Logo, Titelbild und die Ziele der QR-Codes. So baut ihr
+die Drucksachen mit euren Angaben:
+
+```sh
+cp community-vorlage.toml musterstadt.toml   # ausfüllen, Kommentare darin erklären jede Zeile
+python3 bauen.py musterstadt.toml
+```
+
+Die Druckbögen landen in `ausgabe/musterstadt/` (`*-a4.pdf`), die Dateien im Repo bleiben unberührt.
+Ohne eigenes Logo steht das OpenStreetMap-Logo auf den Karten, ohne Titelbild zeigt der klassische
+Aushang oben Logo und Schriftzug. Passt ein Text nicht, setzt ihn das Skript kleiner und sagt es;
+bei „schwer lesbar“ lieber kürzen. Den Shop-Aufsteller gibt es nur für Fulda.
+Wie gedruckt und geschnitten wird, steht gleich hier drunter.
 
 ## Drucken
 
